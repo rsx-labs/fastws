@@ -1,0 +1,166 @@
+﻿<error errorId="6d3a9174-569d-407b-a642-eb98e3ae0baf" application="/LM/W3SVC/2/ROOT" host="TKWIN81-CLNT" type="System.FormatException" message="Index (zero based) must be greater than or equal to zero and less than the size of the argument list." source="mscorlib" detail="System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.&#xD;&#xA;   at System.Text.StringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ParamsArray args)&#xD;&#xA;   at System.String.FormatHelper(IFormatProvider provider, String format, ParamsArray args)&#xD;&#xA;   at System.String.Format(String format, Object[] args)&#xD;&#xA;   at FASTWSv1.BO.AssignmentProcess.AcceptAssignment(Int32 employeeID, Int32 assignmentID) in c:\Dev\FASTWSv1\FASTWSv1\BO\AssignmentProcess.cs:line 474&#xD;&#xA;   at FASTWSv1.Controllers.AssignmentController.AcceptOrRejectAssignment(ExternalAcceptanceViewModel model) in c:\Dev\FASTWSv1\FASTWSv1\Controllers\AssignmentController.cs:line 95&#xD;&#xA;   at lambda_method(Closure , Object , Object[] )&#xD;&#xA;   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.&lt;&gt;c__DisplayClass10.&lt;GetExecutor&gt;b__9(Object instance, Object[] methodParameters)&#xD;&#xA;   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)&#xD;&#xA;   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ExecuteAsync(HttpControllerContext controllerContext, IDictionary`2 arguments, CancellationToken cancellationToken)&#xD;&#xA;--- End of stack trace from previous location where exception was thrown ---&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()&#xD;&#xA;   at System.Web.Http.Controllers.ApiControllerActionInvoker.&lt;InvokeUsingResultConverterAsync&gt;d__8.MoveNext()&#xD;&#xA;--- End of stack trace from previous location where exception was thrown ---&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()&#xD;&#xA;   at System.Web.Http.Controllers.ActionFilterResult.&lt;ExecuteAsync&gt;d__2.MoveNext()&#xD;&#xA;--- End of stack trace from previous location where exception was thrown ---&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()&#xD;&#xA;   at System.Web.Http.Controllers.AuthenticationFilterResult.&lt;ExecuteAsync&gt;d__0.MoveNext()&#xD;&#xA;--- End of stack trace from previous location where exception was thrown ---&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)&#xD;&#xA;   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()&#xD;&#xA;   at System.Web.Http.ApiController.&lt;InvokeActionWithExceptionFilters&gt;d__1.MoveNext()" time="2016-02-04T13:48:34.6430814Z">
+  <serverVariables>
+    <item name="ALL_HTTP">
+      <value string="HTTP_CACHE_CONTROL:no-cache&#xD;&#xA;HTTP_CONNECTION:keep-alive&#xD;&#xA;HTTP_CONTENT_LENGTH:109&#xD;&#xA;HTTP_CONTENT_TYPE:application/json&#xD;&#xA;HTTP_ACCEPT:*/*&#xD;&#xA;HTTP_ACCEPT_ENCODING:gzip, deflate, sdch&#xD;&#xA;HTTP_ACCEPT_LANGUAGE:en-US,en;q=0.8&#xD;&#xA;HTTP_HOST:localhost:49418&#xD;&#xA;HTTP_USER_AGENT:Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36&#xD;&#xA;HTTP_ORIGIN:chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop&#xD;&#xA;HTTP_POSTMAN_TOKEN:cb3efe25-4699-ce72-7d36-752da9c80cfa&#xD;&#xA;" />
+    </item>
+    <item name="ALL_RAW">
+      <value string="Cache-Control: no-cache&#xD;&#xA;Connection: keep-alive&#xD;&#xA;Content-Length: 109&#xD;&#xA;Content-Type: application/json&#xD;&#xA;Accept: */*&#xD;&#xA;Accept-Encoding: gzip, deflate, sdch&#xD;&#xA;Accept-Language: en-US,en;q=0.8&#xD;&#xA;Host: localhost:49418&#xD;&#xA;User-Agent: Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36&#xD;&#xA;Origin: chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop&#xD;&#xA;Postman-Token: cb3efe25-4699-ce72-7d36-752da9c80cfa&#xD;&#xA;" />
+    </item>
+    <item name="APPL_MD_PATH">
+      <value string="/LM/W3SVC/2/ROOT" />
+    </item>
+    <item name="APPL_PHYSICAL_PATH">
+      <value string="C:\Dev\FASTWSv1\FASTWSv1\" />
+    </item>
+    <item name="AUTH_TYPE">
+      <value string="" />
+    </item>
+    <item name="AUTH_USER">
+      <value string="" />
+    </item>
+    <item name="AUTH_PASSWORD">
+      <value string="*****" />
+    </item>
+    <item name="LOGON_USER">
+      <value string="" />
+    </item>
+    <item name="REMOTE_USER">
+      <value string="" />
+    </item>
+    <item name="CERT_COOKIE">
+      <value string="" />
+    </item>
+    <item name="CERT_FLAGS">
+      <value string="" />
+    </item>
+    <item name="CERT_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SERIALNUMBER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CERT_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CONTENT_LENGTH">
+      <value string="109" />
+    </item>
+    <item name="CONTENT_TYPE">
+      <value string="application/json" />
+    </item>
+    <item name="GATEWAY_INTERFACE">
+      <value string="CGI/1.1" />
+    </item>
+    <item name="HTTPS">
+      <value string="off" />
+    </item>
+    <item name="HTTPS_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="INSTANCE_ID">
+      <value string="2" />
+    </item>
+    <item name="INSTANCE_META_PATH">
+      <value string="/LM/W3SVC/2" />
+    </item>
+    <item name="LOCAL_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="PATH_INFO">
+      <value string="/api/Assignment/AcceptReject" />
+    </item>
+    <item name="PATH_TRANSLATED">
+      <value string="C:\Dev\FASTWSv1\FASTWSv1\api\Assignment\AcceptReject" />
+    </item>
+    <item name="QUERY_STRING">
+      <value string="" />
+    </item>
+    <item name="REMOTE_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_HOST">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_PORT">
+      <value string="54002" />
+    </item>
+    <item name="REQUEST_METHOD">
+      <value string="PUT" />
+    </item>
+    <item name="SCRIPT_NAME">
+      <value string="/api/Assignment/AcceptReject" />
+    </item>
+    <item name="SERVER_NAME">
+      <value string="localhost" />
+    </item>
+    <item name="SERVER_PORT">
+      <value string="49418" />
+    </item>
+    <item name="SERVER_PORT_SECURE">
+      <value string="0" />
+    </item>
+    <item name="SERVER_PROTOCOL">
+      <value string="HTTP/1.1" />
+    </item>
+    <item name="SERVER_SOFTWARE">
+      <value string="Microsoft-IIS/10.0" />
+    </item>
+    <item name="URL">
+      <value string="/api/Assignment/AcceptReject" />
+    </item>
+    <item name="HTTP_CACHE_CONTROL">
+      <value string="no-cache" />
+    </item>
+    <item name="HTTP_CONNECTION">
+      <value string="keep-alive" />
+    </item>
+    <item name="HTTP_CONTENT_LENGTH">
+      <value string="109" />
+    </item>
+    <item name="HTTP_CONTENT_TYPE">
+      <value string="application/json" />
+    </item>
+    <item name="HTTP_ACCEPT">
+      <value string="*/*" />
+    </item>
+    <item name="HTTP_ACCEPT_ENCODING">
+      <value string="gzip, deflate, sdch" />
+    </item>
+    <item name="HTTP_ACCEPT_LANGUAGE">
+      <value string="en-US,en;q=0.8" />
+    </item>
+    <item name="HTTP_HOST">
+      <value string="localhost:49418" />
+    </item>
+    <item name="HTTP_USER_AGENT">
+      <value string="Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36" />
+    </item>
+    <item name="HTTP_ORIGIN">
+      <value string="chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop" />
+    </item>
+    <item name="HTTP_POSTMAN_TOKEN">
+      <value string="cb3efe25-4699-ce72-7d36-752da9c80cfa" />
+    </item>
+  </serverVariables>
+</error>
