@@ -21,5 +21,7 @@ namespace FASTWSv1
         public Nullable<System.DateTime> DateAssigned { get; set; }
         public Nullable<System.DateTime> DateReleased { get; set; }
         public string Remarks { get; set; }
+        public string FromID { get; set; }
+        public string ToID { get; set; }
     }
 }

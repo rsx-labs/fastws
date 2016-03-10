@@ -5,6 +5,13 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="FASTDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AccessLevel">
+          <Key>
+            <PropertyRef Name="AccessLevel" />
+          </Key>
+          <Property Name="AccessLevel" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccessDescription" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="AccessRight">
           <Key>
             <PropertyRef Name="AccessID" />
@@ -26,6 +33,8 @@
           <Property Name="DateAssigned" Type="date" />
           <Property Name="DateReleased" Type="date" />
           <Property Name="Remarks" Type="text" />
+          <Property Name="FromID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ToID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="AssetClass">
           <Key>
@@ -404,12 +413,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="DepartmentID" Type="int" Nullable="false" />
           <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <Function Name="InsertToAuditTrail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="employeeID" Type="int" Mode="In" />
-          <Parameter Name="action" Type="nvarchar" Mode="In" />
-          <Parameter Name="extraInfo" Type="nvarchar" Mode="In" />
-        </Function>
         <EntityContainer Name="FASTDBModelStoreContainer">
+          <EntitySet Name="AccessLevel" EntityType="Self.AccessLevel" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AccessRight" EntityType="Self.AccessRight" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AssetAssignment" EntityType="Self.AssetAssignment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AssetClass" EntityType="Self.AssetClass" Schema="dbo" store:Type="Tables" />
@@ -635,6 +640,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="DateAssigned" Type="DateTime" Precision="0" />
           <Property Name="DateReleased" Type="DateTime" Precision="0" />
           <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="FromID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="ToID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
         </EntityType>
         <EntityType Name="AssetClass">
           <Key>
@@ -764,6 +771,7 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySet Name="ReasonCodes" EntityType="FASTDBModel.ReasonCode" />
           <EntitySet Name="vwFixAssets" EntityType="FASTDBModel.vwFixAsset" />
           <EntitySet Name="vwEmployees" EntityType="FASTDBModel.vwEmployee" />
+          <EntitySet Name="AccessLevels" EntityType="FASTDBModel.AccessLevel" />
         </EntityContainer>
         <EntityType Name="vwCustodiansList">
           <Key>
@@ -1025,6 +1033,13 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="AccessLevel">
+          <Key>
+            <PropertyRef Name="AccessLevel1" />
+          </Key>
+          <Property Name="AccessLevel1" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccessDescription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1045,6 +1060,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySetMapping Name="AssetAssignments">
             <EntityTypeMapping TypeName="FASTDBModel.AssetAssignment">
               <MappingFragment StoreEntitySet="AssetAssignment">
+                <ScalarProperty Name="ToID" ColumnName="ToID" />
+                <ScalarProperty Name="FromID" ColumnName="FromID" />
                 <ScalarProperty Name="AssetAssignmentID" ColumnName="AssetAssignmentID" />
                 <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
                 <ScalarProperty Name="FixAssetID" ColumnName="FixAssetID" />
@@ -1164,7 +1181,6 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="InsertToAuditTrail" FunctionName="FASTDBModel.Store.InsertToAuditTrail" />
           <EntitySetMapping Name="vwCustodiansLists">
             <EntityTypeMapping TypeName="FASTDBModel.vwCustodiansList">
               <MappingFragment StoreEntitySet="vwCustodiansList">
@@ -1381,6 +1397,14 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
                 <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AccessLevels">
+            <EntityTypeMapping TypeName="FASTDBModel.AccessLevel">
+              <MappingFragment StoreEntitySet="AccessLevel">
+                <ScalarProperty Name="AccessDescription" ColumnName="AccessDescription" />
+                <ScalarProperty Name="AccessLevel1" ColumnName="AccessLevel" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

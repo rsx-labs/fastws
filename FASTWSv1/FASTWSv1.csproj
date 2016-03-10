@@ -177,6 +177,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessLevel.cs">
+      <DependentUpon>FASTDBEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="AccessRight.cs">
       <DependentUpon>FASTDBEntities.tt</DependentUpon>
     </Compile>
@@ -333,6 +336,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\EmailTemplates\Assignment_Update.html" />
     <Content Include="App_Data\EmailTemplates\Release_Accepted.html" />
     <Content Include="App_Data\EmailTemplates\Release_Approved.html" />
     <Content Include="App_Data\EmailTemplates\Release_Confirmation.html" />
@@ -360,7 +364,6 @@
     <Content Include="App_Data\EmailTemplates\Registration.html" />
     <Content Include="App_Data\EmailTemplates\ResetPassword.html" />
     <Content Include="App_Data\EmailTemplates\Employee_Accountability_Form.html" />
-    <Content Include="App_Data\EmailTemplates\_fujitsu_logo.jpg" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap-fasttheme_1.css" />
     <Content Include="Content\bootstrap.css" />
@@ -416,6 +419,7 @@
       <LastGenOutput>FASTDBLogModel.cs</LastGenOutput>
     </Content>
     <None Include="Properties\PublishProfiles\v0450.pubxml" />
+    <None Include="Properties\PublishProfiles\v0500.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

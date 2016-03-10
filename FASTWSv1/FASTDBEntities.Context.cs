@@ -50,6 +50,7 @@ namespace FASTWSv1
         public virtual DbSet<ReasonCode> ReasonCodes { get; set; }
         public virtual DbSet<vwFixAsset> vwFixAssets { get; set; }
         public virtual DbSet<vwEmployee> vwEmployees { get; set; }
+        public virtual DbSet<AccessLevel> AccessLevels { get; set; }
     
         public virtual int InsertToAuditTrail(Nullable<int> employeeID, string action, string extraInfo)
         {

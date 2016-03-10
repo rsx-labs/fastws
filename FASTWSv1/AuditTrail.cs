@@ -19,5 +19,7 @@ namespace FASTWSv1
         public int EmployeeID { get; set; }
         public string Action { get; set; }
         public string AdditionalInformation { get; set; }
+        public string AssignmentID { get; set; }
+        public string AssetTag { get; set; }
     }
 }

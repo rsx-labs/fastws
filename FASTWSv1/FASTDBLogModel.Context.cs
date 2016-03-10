@@ -29,7 +29,7 @@ namespace FASTWSv1
     
         public virtual DbSet<AuditTrail> AuditTrails { get; set; }
     
-        public virtual int InsertToAuditTrail(Nullable<int> employeeID, string action, string extraInfo)
+        public virtual int InsertToAuditTrail(Nullable<int> employeeID, string action, string extraInfo, Nullable<int> assignmentID, Nullable<int> assetID)
         {
             var employeeIDParameter = employeeID.HasValue ?
                 new ObjectParameter("employeeID", employeeID) :
@@ -43,7 +43,15 @@ namespace FASTWSv1
                 new ObjectParameter("extraInfo", extraInfo) :
                 new ObjectParameter("extraInfo", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InsertToAuditTrail", employeeIDParameter, actionParameter, extraInfoParameter);
+            var assignmentIDParameter = assignmentID.HasValue ?
+                new ObjectParameter("assignmentID", assignmentID) :
+                new ObjectParameter("assignmentID", typeof(int));
+    
+            var assetIDParameter = assetID.HasValue ?
+                new ObjectParameter("assetID", assetID) :
+                new ObjectParameter("assetID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InsertToAuditTrail", employeeIDParameter, actionParameter, extraInfoParameter, assignmentIDParameter, assetIDParameter);
         }
     }
 }

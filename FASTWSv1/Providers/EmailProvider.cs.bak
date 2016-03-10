@@ -27,7 +27,6 @@ namespace FASTWSv1.Providers
             ASSIGNMENT_MIS,
             ASSIGNMENT_UPDATE,
             ASSIGNMENT_ACCEPTANCE,
-            ASSIGNMENT_ACCEPTANCE_MIS,
             ASSIGNMENT_REJECTED,
             ASSIGNMENT_REJECTED_NOTIFICATION,
             LIST_ASSIGMENTS,
@@ -186,29 +185,6 @@ namespace FASTWSv1.Providers
 
                     receipients = GetAdminMailToList(employee.DepartmentID);
                     EmailData emailData = new EmailData(employee.EmailAddress, receipients, emailSubj, emailBody);
-
-                    SendAsync(emailData);
-                    break;
-
-                case EmailType.ASSIGNMENT_UPDATE:
-
-                    emailTemplate = GetTemplate("Assignment_Update.html");
-                    emailBody = BuildAssignmentEmailBody(assignment, emailTemplate, employee.FirstName + " " + employee.LastName);
-                    emailSubj = String.Format("FASTrack : Asset Assignment REF#{0}", assignmentID);
-
-                    emailData = new EmailData(employee.EmailAddress, emailSubj, emailBody);
-
-                    SendAsync(emailData);
-                    break;
-
-                case EmailType.ASSIGNMENT_ACCEPTANCE_MIS:
-
-                    receipients = GetMISMailToList(employee.DepartmentID);
-                    emailTemplate = GetTemplate("Assignment_Accepted.html");
-                    emailBody = BuildAssignmentEmailBody(assignment, emailTemplate, "MIS");
-                    emailSubj = String.Format("FASTrack : Asset Assignment REF#{0}", assignmentID);
-
-                    emailData = new EmailData(receipients, emailSubj, emailBody);
 
                     SendAsync(emailData);
                     break;
@@ -505,12 +481,9 @@ namespace FASTWSv1.Providers
         private string BuildAssignmentEmailBody(vwAssetAssignment assignment,string emailTemplate, 
                                                     string receiver, string optVal1="",string optVal2="", string optVal3="")
         {
-            string dateReleased = (assignment.DateReleased != null) ? assignment.DateReleased.Value.ToShortDateString() : String.Empty;
-
             string email = String.Format(emailTemplate, receiver, assignment.TypeDescription, assignment.Brand, assignment.Model,
                                             assignment.AssetTag, assignment.SerialNumber, "", assignment.StatusDescription,
-                                            assignment.AssignmentStatus, assignment.DateAssigned.Value.ToShortDateString(),
-                                            dateReleased,"",optVal1,optVal2, optVal3);
+                                            assignment.AssignmentStatus, assignment.DateAssigned.Value.ToShortDateString(),"",optVal1,optVal2, optVal3);
 
             return email;
             
