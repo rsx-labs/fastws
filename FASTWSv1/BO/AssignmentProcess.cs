@@ -36,7 +36,7 @@ namespace FASTWSv1.BO
             using (var db = new FASTDBEntities())
             {
                 List<vwAssetAssignment> assignments = ( from assign in db.vwAssetAssignments
-                                                        where assign.EmployeeID == employeeID && assign.AssignmentStatusID == Constants.ASSIGNMENT_STATUS_ACCEPTED
+                                                        where assign.EmployeeID == employeeID && assign.AssignmentStatusID == Constants.ASSIGNMENT_STATUS_ACCEPTED && assign.AssetStatusID == Constants.ASSET_STATUS_ASSIGNED
                                                        select assign).ToList();
 
                 if (assignments.Count() > 0)
@@ -389,7 +389,11 @@ namespace FASTWSv1.BO
                 if (assignments.Count() > 0)
                 {
                     int prevStatus = assignments[0].AssignmentStatusID;
-                    string prevToID = assignments[0].ToID.ToString();
+                    string prevToID;
+                    if (assignments[0].ToID != null)
+                    {
+                        prevToID = assignments[0].ToID.ToString();
+                    }
 
                     assetInQuestion = (from asset in db.FixAssets
                                        where asset.FixAssetID == assetID
