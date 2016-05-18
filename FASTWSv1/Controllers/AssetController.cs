@@ -39,7 +39,7 @@ namespace FASTWSv1.Controllers
 
         [HttpGet]
         [Route("FixAssetID/{fixAssetID}")]
-        public FixAsset GetAssetByID(int fixAssetID)
+        public vwFixAssetList GetAssetByID(int fixAssetID)
         {
             BO.AssetProcess assetProcess = new BO.AssetProcess();
 
@@ -48,7 +48,7 @@ namespace FASTWSv1.Controllers
 
         [HttpGet]
         [Route("AssetTag/{assetTag}")]
-        public FixAsset GetAssetbyAssetTag(string assetTag)
+        public vwFixAssetList GetAssetbyAssetTag(string assetTag)
         {
             BO.AssetProcess assetProcess = new BO.AssetProcess();
 
@@ -57,7 +57,7 @@ namespace FASTWSv1.Controllers
 
         [HttpGet]
         [Route("SerialNumber/{serialNumber}")]
-        public FixAsset GetAssetBySerialNumber(string serialNumber)
+        public vwFixAssetList GetAssetBySerialNumber(string serialNumber)
         {
             BO.AssetProcess assetProccess = new BO.AssetProcess();
 
@@ -66,7 +66,7 @@ namespace FASTWSv1.Controllers
 
         [HttpGet]
         [Route("IssuerID/{issuerID}")]
-        public FixAsset GetAssetbyIssuerID(int issuerID)
+        public vwFixAssetList GetAssetbyIssuerID(int issuerID)
         {
             BO.AssetProcess assetProcess = new BO.AssetProcess();
 
@@ -81,6 +81,16 @@ namespace FASTWSv1.Controllers
             {
                 return db.FixAssets.ToList();
             }
+        }
+
+
+        [HttpGet]
+        [Route("GetAssetTypes/{assetClass}")]
+        public List<AssetType> GetAssetTypes(int assetClass)
+        {
+            BO.AssetProcess assetProcess = new BO.AssetProcess();
+
+            return assetProcess.GetAssetTypes(assetClass);
         }
 
     }

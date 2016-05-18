@@ -31,11 +31,11 @@ namespace FASTWSv1.BO
             return null;
         }
 
-        public vwEmployee GetEmployeeViewByID(int employeeID)
+        public vwEmployeeList GetEmployeeViewByID(int employeeID)
         {
             using (var db = new FASTDBEntities())
             {
-                vwEmployee[] employees = (from emp in db.vwEmployees
+                vwEmployeeList[] employees = (from emp in db.vwEmployeeLists
                                         where emp.EmployeeID == employeeID
                                         select emp).ToArray();
 

@@ -5,13 +5,6 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="FASTDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="AccessLevel">
-          <Key>
-            <PropertyRef Name="AccessLevel" />
-          </Key>
-          <Property Name="AccessLevel" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="AccessDescription" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
         <EntityType Name="AccessRight">
           <Key>
             <PropertyRef Name="AccessID" />
@@ -62,7 +55,7 @@
           <Key>
             <PropertyRef Name="AssignmentStatusID" />
           </Key>
-          <Property Name="AssignmentStatusID" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssignmentStatusID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="StatusDescription" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Department">
@@ -93,7 +86,7 @@
         </EntityType>
         <EntityType Name="FixAsset">
           <Key>
-            <PropertyRef Name="FixAssetID" />
+            <PropertyRef Name="AssetTag" />
           </Key>
           <Property Name="FixAssetID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Model" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -150,14 +143,33 @@
           <Property Name="DateStamp" Type="date" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'FASTDB.dbo.vwAccessRights' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwAccessRights">
+          <Key>
+            <PropertyRef Name="AccessID" />
+            <PropertyRef Name="EmployeeID" />
+            <PropertyRef Name="FullName" />
+            <PropertyRef Name="AccessMode" />
+            <PropertyRef Name="Status" />
+          </Key>
+          <Property Name="AccessID" Type="int" Nullable="false" />
+          <Property Name="EmployeeID" Type="int" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="72" Nullable="false" />
+          <Property Name="AccessMode" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="GroupName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Status" Type="smallint" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignments' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vwAssetAssignments">
           <Key>
             <PropertyRef Name="ClassDescription" />
             <PropertyRef Name="StatusDescription" />
             <PropertyRef Name="TypeDescription" />
+            <PropertyRef Name="AssetAssignmentID" />
           </Key>
-          <Property Name="AssetAssignmentID" Type="int" />
+          <Property Name="AssetAssignmentID" Type="int" Nullable="false" />
           <Property Name="EmployeeID" Type="int" />
           <Property Name="FixAssetID" Type="int" />
           <Property Name="Model" Type="nvarchar" MaxLength="50" />
@@ -179,6 +191,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignments' does not have a pri
           <Property Name="DateAssigned" Type="date" />
           <Property Name="DateReleased" Type="date" />
           <Property Name="AssignmentRemarks" Type="text" />
+          <Property Name="FromID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ToID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignmentsForCustodians' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -215,6 +229,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignmentsForCustodians' does n
           <Property Name="AssignmentRemarks" Type="text" />
           <Property Name="AdminID" Type="int" Nullable="false" />
           <Property Name="DepartmentID" Type="int" Nullable="false" />
+          <Property Name="FromID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ToID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignmentsForManagers' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -251,6 +267,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignmentsForManagers' does not
           <Property Name="AssignmentRemarks" Type="text" />
           <Property Name="ManagerID" Type="int" Nullable="false" />
           <Property Name="DepartmentID" Type="int" Nullable="false" />
+          <Property Name="FromID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ToID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignmentsForMIS' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -287,6 +305,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwAssetAssignmentsForMIS' does not have
           <Property Name="AssignmentRemarks" Type="text" />
           <Property Name="MISEmployeeID" Type="int" Nullable="false" />
           <Property Name="DepartmentID" Type="int" Nullable="false" />
+          <Property Name="FromID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ToID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'FASTDB.dbo.vwCustodiansList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -309,69 +329,149 @@ warning 6002: The table/view 'FASTDB.dbo.vwCustodiansList' does not have a prima
           <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'FASTDB.dbo.vwEmployees' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="vwEmployees">
+warning 6002: The table/view 'FASTDB.dbo.vwDepartmentList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwDepartmentList">
+          <Key>
+            <PropertyRef Name="DepartmentID" />
+            <PropertyRef Name="DepartmentName" />
+          </Key>
+          <Property Name="DepartmentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="GroupName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'FASTDB.dbo.vwEmployeeList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwEmployeeList">
           <Key>
             <PropertyRef Name="EmployeeID" />
             <PropertyRef Name="FirstName" />
             <PropertyRef Name="LastName" />
+            <PropertyRef Name="FullName" />
             <PropertyRef Name="Gender" />
             <PropertyRef Name="EmailAddress" />
             <PropertyRef Name="DepartmentID" />
             <PropertyRef Name="PositionID" />
             <PropertyRef Name="IsCompany" />
             <PropertyRef Name="Status" />
-            <PropertyRef Name="DepartmentName" />
-            <PropertyRef Name="Description" />
           </Key>
           <Property Name="EmployeeID" Type="int" Nullable="false" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="35" Nullable="false" />
           <Property Name="MiddleName" Type="nvarchar" MaxLength="35" />
           <Property Name="LastName" Type="nvarchar" MaxLength="35" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="106" Nullable="false" />
           <Property Name="ManagerID" Type="int" />
           <Property Name="Gender" Type="nvarchar" MaxLength="6" Nullable="false" />
           <Property Name="PhoneNumber" Type="nvarchar" MaxLength="20" />
           <Property Name="EmailAddress" Type="nvarchar" MaxLength="60" Nullable="false" />
           <Property Name="DepartmentID" Type="int" Nullable="false" />
+          <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" />
+          <Property Name="GroupName" Type="nvarchar" MaxLength="50" />
           <Property Name="PositionID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
           <Property Name="IsCompany" Type="smallint" Nullable="false" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="50" />
           <Property Name="Status" Type="smallint" Nullable="false" />
-          <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'FASTDB.dbo.vwEmployees' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwEmployees">
+          <Key>
+            <PropertyRef Name="EmployeeID" />
+            <PropertyRef Name="FirstName" />
+            <PropertyRef Name="LastName" />
+            <PropertyRef Name="FullName" />
+            <PropertyRef Name="Gender" />
+            <PropertyRef Name="EmailAddress" />
+            <PropertyRef Name="DepartmentID" />
+            <PropertyRef Name="PositionID" />
+            <PropertyRef Name="IsCompany" />
+            <PropertyRef Name="Status" />
+          </Key>
+          <Property Name="EmployeeID" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="35" Nullable="false" />
+          <Property Name="MiddleName" Type="nvarchar" MaxLength="35" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="35" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="106" Nullable="false" />
+          <Property Name="ManagerID" Type="int" />
+          <Property Name="Gender" Type="nvarchar" MaxLength="6" Nullable="false" />
+          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="20" />
+          <Property Name="EmailAddress" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="DepartmentID" Type="int" Nullable="false" />
+          <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" />
           <Property Name="GroupName" Type="nvarchar" MaxLength="50" />
-          <Property Name="Description" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PositionID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsCompany" Type="smallint" Nullable="false" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Status" Type="smallint" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'FASTDB.dbo.vwFixAssetList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwFixAssetList">
+          <Key>
+            <PropertyRef Name="FixAssetID" />
+            <PropertyRef Name="Model" />
+            <PropertyRef Name="SerialNumber" />
+            <PropertyRef Name="AssetTag" />
+            <PropertyRef Name="Brand" />
+            <PropertyRef Name="AssetTypeID" />
+            <PropertyRef Name="AssetClassID" />
+            <PropertyRef Name="AssetStatusID" />
+          </Key>
+          <Property Name="FixAssetID" Type="int" Nullable="false" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AssetTag" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Remarks" Type="text" />
+          <Property Name="AcquisitionDate" Type="date" />
+          <Property Name="ExpiryDate" Type="date" />
+          <Property Name="IssuerID" Type="int" />
+          <Property Name="IssuerName" Type="nvarchar" MaxLength="50" />
+          <Property Name="IssuerType" Type="int" />
+          <Property Name="LocationID" Type="int" />
+          <Property Name="LocationName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Country" Type="nchar" MaxLength="10" />
+          <Property Name="AssetTypeID" Type="int" Nullable="false" />
+          <Property Name="TypeDescription" Type="nvarchar" MaxLength="50" />
+          <Property Name="AssetClassID" Type="int" Nullable="false" />
+          <Property Name="ClassDescription" Type="nvarchar" MaxLength="50" />
+          <Property Name="AssetStatusID" Type="int" Nullable="false" />
+          <Property Name="StatusDescription" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'FASTDB.dbo.vwFixAssets' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vwFixAssets">
           <Key>
             <PropertyRef Name="FixAssetID" />
-            <PropertyRef Name="AssetTag" />
-            <PropertyRef Name="SerialNumber" />
-            <PropertyRef Name="AssetTypeID" />
-            <PropertyRef Name="TypeDescription" />
-            <PropertyRef Name="Brand" />
             <PropertyRef Name="Model" />
-            <PropertyRef Name="AssetStatusID" />
-            <PropertyRef Name="StatusDescription" />
+            <PropertyRef Name="SerialNumber" />
+            <PropertyRef Name="AssetTag" />
+            <PropertyRef Name="Brand" />
+            <PropertyRef Name="AssetTypeID" />
             <PropertyRef Name="AssetClassID" />
-            <PropertyRef Name="ClassDescription" />
+            <PropertyRef Name="AssetStatusID" />
           </Key>
           <Property Name="FixAssetID" Type="int" Nullable="false" />
-          <Property Name="AssetTag" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="SerialNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="AssetTypeID" Type="int" Nullable="false" />
-          <Property Name="TypeDescription" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Brand" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Model" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AssetTag" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Remarks" Type="text" />
           <Property Name="AcquisitionDate" Type="date" />
+          <Property Name="ExpiryDate" Type="date" />
           <Property Name="IssuerID" Type="int" />
+          <Property Name="IssuerName" Type="nvarchar" MaxLength="50" />
+          <Property Name="IssuerType" Type="int" />
           <Property Name="LocationID" Type="int" />
-          <Property Name="AssetStatusID" Type="int" Nullable="false" />
-          <Property Name="StatusDescription" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LocationName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Country" Type="nchar" MaxLength="10" />
+          <Property Name="AssetTypeID" Type="int" Nullable="false" />
+          <Property Name="TypeDescription" Type="nvarchar" MaxLength="50" />
           <Property Name="AssetClassID" Type="int" Nullable="false" />
-          <Property Name="ClassDescription" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ClassDescription" Type="nvarchar" MaxLength="50" />
+          <Property Name="AssetStatusID" Type="int" Nullable="false" />
+          <Property Name="StatusDescription" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'FASTDB.dbo.vwManagersList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -398,11 +498,11 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
         <EntityType Name="vwMISList">
           <Key>
             <PropertyRef Name="EmployeeID" />
-            <PropertyRef Name="FirstName" />
-            <PropertyRef Name="LastName" />
-            <PropertyRef Name="EmailAddress" />
-            <PropertyRef Name="DepartmentID" />
-            <PropertyRef Name="DepartmentName" />
+            
+            
+            
+            
+            
           </Key>
           <Property Name="EmployeeID" Type="int" Nullable="false" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="35" Nullable="false" />
@@ -414,7 +514,6 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityContainer Name="FASTDBModelStoreContainer">
-          <EntitySet Name="AccessLevel" EntityType="Self.AccessLevel" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AccessRight" EntityType="Self.AccessRight" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AssetAssignment" EntityType="Self.AssetAssignment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AssetClass" EntityType="Self.AssetClass" Schema="dbo" store:Type="Tables" />
@@ -429,6 +528,17 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySet Name="Position" EntityType="Self.Position" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReasonCode" EntityType="Self.ReasonCode" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Registration" EntityType="Self.Registration" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vwAccessRights" EntityType="Self.vwAccessRights" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwAccessRights].[AccessID] AS [AccessID], 
+    [vwAccessRights].[EmployeeID] AS [EmployeeID], 
+    [vwAccessRights].[FullName] AS [FullName], 
+    [vwAccessRights].[AccessMode] AS [AccessMode], 
+    [vwAccessRights].[Description] AS [Description], 
+    [vwAccessRights].[GroupName] AS [GroupName], 
+    [vwAccessRights].[Status] AS [Status]
+    FROM [dbo].[vwAccessRights] AS [vwAccessRights]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="vwAssetAssignments" EntityType="Self.vwAssetAssignments" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [vwAssetAssignments].[AssetAssignmentID] AS [AssetAssignmentID], 
@@ -452,7 +562,9 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
     [vwAssetAssignments].[AssignmentStatus] AS [AssignmentStatus], 
     [vwAssetAssignments].[DateAssigned] AS [DateAssigned], 
     [vwAssetAssignments].[DateReleased] AS [DateReleased], 
-    [vwAssetAssignments].[AssignmentRemarks] AS [AssignmentRemarks]
+    [vwAssetAssignments].[AssignmentRemarks] AS [AssignmentRemarks], 
+    [vwAssetAssignments].[FromID] AS [FromID], 
+    [vwAssetAssignments].[ToID] AS [ToID]
     FROM [dbo].[vwAssetAssignments] AS [vwAssetAssignments]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vwAssetAssignmentsForCustodians" EntityType="Self.vwAssetAssignmentsForCustodians" store:Type="Views" store:Schema="dbo">
@@ -480,7 +592,9 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
     [vwAssetAssignmentsForCustodians].[DateReleased] AS [DateReleased], 
     [vwAssetAssignmentsForCustodians].[AssignmentRemarks] AS [AssignmentRemarks], 
     [vwAssetAssignmentsForCustodians].[AdminID] AS [AdminID], 
-    [vwAssetAssignmentsForCustodians].[DepartmentID] AS [DepartmentID]
+    [vwAssetAssignmentsForCustodians].[DepartmentID] AS [DepartmentID], 
+    [vwAssetAssignmentsForCustodians].[FromID] AS [FromID], 
+    [vwAssetAssignmentsForCustodians].[ToID] AS [ToID]
     FROM [dbo].[vwAssetAssignmentsForCustodians] AS [vwAssetAssignmentsForCustodians]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vwAssetAssignmentsForManagers" EntityType="Self.vwAssetAssignmentsForManagers" store:Type="Views" store:Schema="dbo">
@@ -508,7 +622,9 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
     [vwAssetAssignmentsForManagers].[DateReleased] AS [DateReleased], 
     [vwAssetAssignmentsForManagers].[AssignmentRemarks] AS [AssignmentRemarks], 
     [vwAssetAssignmentsForManagers].[ManagerID] AS [ManagerID], 
-    [vwAssetAssignmentsForManagers].[DepartmentID] AS [DepartmentID]
+    [vwAssetAssignmentsForManagers].[DepartmentID] AS [DepartmentID], 
+    [vwAssetAssignmentsForManagers].[FromID] AS [FromID], 
+    [vwAssetAssignmentsForManagers].[ToID] AS [ToID]
     FROM [dbo].[vwAssetAssignmentsForManagers] AS [vwAssetAssignmentsForManagers]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vwAssetAssignmentsForMIS" EntityType="Self.vwAssetAssignmentsForMIS" store:Type="Views" store:Schema="dbo">
@@ -536,7 +652,9 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
     [vwAssetAssignmentsForMIS].[DateReleased] AS [DateReleased], 
     [vwAssetAssignmentsForMIS].[AssignmentRemarks] AS [AssignmentRemarks], 
     [vwAssetAssignmentsForMIS].[MISEmployeeID] AS [MISEmployeeID], 
-    [vwAssetAssignmentsForMIS].[DepartmentID] AS [DepartmentID]
+    [vwAssetAssignmentsForMIS].[DepartmentID] AS [DepartmentID], 
+    [vwAssetAssignmentsForMIS].[FromID] AS [FromID], 
+    [vwAssetAssignmentsForMIS].[ToID] AS [ToID]
     FROM [dbo].[vwAssetAssignmentsForMIS] AS [vwAssetAssignmentsForMIS]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vwCustodiansList" EntityType="Self.vwCustodiansList" store:Type="Views" store:Schema="dbo">
@@ -551,43 +669,101 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
     [vwCustodiansList].[DepartmentName] AS [DepartmentName]
     FROM [dbo].[vwCustodiansList] AS [vwCustodiansList]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="vwDepartmentList" EntityType="Self.vwDepartmentList" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwDepartmentList].[DepartmentID] AS [DepartmentID], 
+    [vwDepartmentList].[DepartmentName] AS [DepartmentName], 
+    [vwDepartmentList].[GroupName] AS [GroupName]
+    FROM [dbo].[vwDepartmentList] AS [vwDepartmentList]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vwEmployeeList" EntityType="Self.vwEmployeeList" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwEmployeeList].[EmployeeID] AS [EmployeeID], 
+    [vwEmployeeList].[FirstName] AS [FirstName], 
+    [vwEmployeeList].[MiddleName] AS [MiddleName], 
+    [vwEmployeeList].[LastName] AS [LastName], 
+    [vwEmployeeList].[FullName] AS [FullName], 
+    [vwEmployeeList].[ManagerID] AS [ManagerID], 
+    [vwEmployeeList].[Gender] AS [Gender], 
+    [vwEmployeeList].[PhoneNumber] AS [PhoneNumber], 
+    [vwEmployeeList].[EmailAddress] AS [EmailAddress], 
+    [vwEmployeeList].[DepartmentID] AS [DepartmentID], 
+    [vwEmployeeList].[DepartmentName] AS [DepartmentName], 
+    [vwEmployeeList].[GroupName] AS [GroupName], 
+    [vwEmployeeList].[PositionID] AS [PositionID], 
+    [vwEmployeeList].[Description] AS [Description], 
+    [vwEmployeeList].[IsCompany] AS [IsCompany], 
+    [vwEmployeeList].[CompanyName] AS [CompanyName], 
+    [vwEmployeeList].[Status] AS [Status]
+    FROM [dbo].[vwEmployeeList] AS [vwEmployeeList]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="vwEmployees" EntityType="Self.vwEmployees" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [vwEmployees].[EmployeeID] AS [EmployeeID], 
     [vwEmployees].[FirstName] AS [FirstName], 
     [vwEmployees].[MiddleName] AS [MiddleName], 
     [vwEmployees].[LastName] AS [LastName], 
+    [vwEmployees].[FullName] AS [FullName], 
     [vwEmployees].[ManagerID] AS [ManagerID], 
     [vwEmployees].[Gender] AS [Gender], 
     [vwEmployees].[PhoneNumber] AS [PhoneNumber], 
     [vwEmployees].[EmailAddress] AS [EmailAddress], 
     [vwEmployees].[DepartmentID] AS [DepartmentID], 
-    [vwEmployees].[PositionID] AS [PositionID], 
-    [vwEmployees].[IsCompany] AS [IsCompany], 
-    [vwEmployees].[CompanyName] AS [CompanyName], 
-    [vwEmployees].[Status] AS [Status], 
     [vwEmployees].[DepartmentName] AS [DepartmentName], 
     [vwEmployees].[GroupName] AS [GroupName], 
-    [vwEmployees].[Description] AS [Description]
+    [vwEmployees].[PositionID] AS [PositionID], 
+    [vwEmployees].[Description] AS [Description], 
+    [vwEmployees].[IsCompany] AS [IsCompany], 
+    [vwEmployees].[CompanyName] AS [CompanyName], 
+    [vwEmployees].[Status] AS [Status]
     FROM [dbo].[vwEmployees] AS [vwEmployees]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vwFixAssetList" EntityType="Self.vwFixAssetList" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vwFixAssetList].[FixAssetID] AS [FixAssetID], 
+    [vwFixAssetList].[Model] AS [Model], 
+    [vwFixAssetList].[SerialNumber] AS [SerialNumber], 
+    [vwFixAssetList].[AssetTag] AS [AssetTag], 
+    [vwFixAssetList].[Brand] AS [Brand], 
+    [vwFixAssetList].[Remarks] AS [Remarks], 
+    [vwFixAssetList].[AcquisitionDate] AS [AcquisitionDate], 
+    [vwFixAssetList].[ExpiryDate] AS [ExpiryDate], 
+    [vwFixAssetList].[IssuerID] AS [IssuerID], 
+    [vwFixAssetList].[IssuerName] AS [IssuerName], 
+    [vwFixAssetList].[IssuerType] AS [IssuerType], 
+    [vwFixAssetList].[LocationID] AS [LocationID], 
+    [vwFixAssetList].[LocationName] AS [LocationName], 
+    [vwFixAssetList].[Country] AS [Country], 
+    [vwFixAssetList].[AssetTypeID] AS [AssetTypeID], 
+    [vwFixAssetList].[TypeDescription] AS [TypeDescription], 
+    [vwFixAssetList].[AssetClassID] AS [AssetClassID], 
+    [vwFixAssetList].[ClassDescription] AS [ClassDescription], 
+    [vwFixAssetList].[AssetStatusID] AS [AssetStatusID], 
+    [vwFixAssetList].[StatusDescription] AS [StatusDescription]
+    FROM [dbo].[vwFixAssetList] AS [vwFixAssetList]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vwFixAssets" EntityType="Self.vwFixAssets" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [vwFixAssets].[FixAssetID] AS [FixAssetID], 
-    [vwFixAssets].[AssetTag] AS [AssetTag], 
-    [vwFixAssets].[SerialNumber] AS [SerialNumber], 
-    [vwFixAssets].[AssetTypeID] AS [AssetTypeID], 
-    [vwFixAssets].[TypeDescription] AS [TypeDescription], 
-    [vwFixAssets].[Brand] AS [Brand], 
     [vwFixAssets].[Model] AS [Model], 
+    [vwFixAssets].[SerialNumber] AS [SerialNumber], 
+    [vwFixAssets].[AssetTag] AS [AssetTag], 
+    [vwFixAssets].[Brand] AS [Brand], 
     [vwFixAssets].[Remarks] AS [Remarks], 
     [vwFixAssets].[AcquisitionDate] AS [AcquisitionDate], 
+    [vwFixAssets].[ExpiryDate] AS [ExpiryDate], 
     [vwFixAssets].[IssuerID] AS [IssuerID], 
+    [vwFixAssets].[IssuerName] AS [IssuerName], 
+    [vwFixAssets].[IssuerType] AS [IssuerType], 
     [vwFixAssets].[LocationID] AS [LocationID], 
-    [vwFixAssets].[AssetStatusID] AS [AssetStatusID], 
-    [vwFixAssets].[StatusDescription] AS [StatusDescription], 
+    [vwFixAssets].[LocationName] AS [LocationName], 
+    [vwFixAssets].[Country] AS [Country], 
+    [vwFixAssets].[AssetTypeID] AS [AssetTypeID], 
+    [vwFixAssets].[TypeDescription] AS [TypeDescription], 
     [vwFixAssets].[AssetClassID] AS [AssetClassID], 
-    [vwFixAssets].[ClassDescription] AS [ClassDescription]
+    [vwFixAssets].[ClassDescription] AS [ClassDescription], 
+    [vwFixAssets].[AssetStatusID] AS [AssetStatusID], 
+    [vwFixAssets].[StatusDescription] AS [StatusDescription]
     FROM [dbo].[vwFixAssets] AS [vwFixAssets]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vwManagersList" EntityType="Self.vwManagersList" store:Type="Views" store:Schema="dbo">
@@ -693,7 +869,7 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
         </EntityType>
         <EntityType Name="FixAsset">
           <Key>
-            <PropertyRef Name="FixAssetID" />
+            <PropertyRef Name="AssetTag" />
           </Key>
           <Property Name="FixAssetID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
@@ -769,9 +945,12 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySet Name="vwAssetAssignmentsForMIS" EntityType="FASTDBModel.vwAssetAssignmentsForMI" />
           <EntitySet Name="AssignmentStatus" EntityType="FASTDBModel.AssignmentStatu" />
           <EntitySet Name="ReasonCodes" EntityType="FASTDBModel.ReasonCode" />
+          <EntitySet Name="vwAccessRights" EntityType="FASTDBModel.vwAccessRight" />
+          <EntitySet Name="vwDepartmentLists" EntityType="FASTDBModel.vwDepartmentList" />
+          <EntitySet Name="vwEmployeeLists" EntityType="FASTDBModel.vwEmployeeList" />
+          <EntitySet Name="vwFixAssetLists" EntityType="FASTDBModel.vwFixAssetList" />
           <EntitySet Name="vwFixAssets" EntityType="FASTDBModel.vwFixAsset" />
           <EntitySet Name="vwEmployees" EntityType="FASTDBModel.vwEmployee" />
-          <EntitySet Name="AccessLevels" EntityType="FASTDBModel.AccessLevel" />
         </EntityContainer>
         <EntityType Name="vwCustodiansList">
           <Key>
@@ -812,11 +991,6 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
         <EntityType Name="vwMISList">
           <Key>
             <PropertyRef Name="EmployeeID" />
-            <PropertyRef Name="FirstName" />
-            <PropertyRef Name="LastName" />
-            <PropertyRef Name="EmailAddress" />
-            <PropertyRef Name="DepartmentID" />
-            <PropertyRef Name="DepartmentName" />
           </Key>
           <Property Name="EmployeeID" Type="Int32" Nullable="false" />
           <Property Name="FirstName" Type="String" Nullable="false" MaxLength="35" FixedLength="false" Unicode="true" />
@@ -832,8 +1006,9 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
             <PropertyRef Name="ClassDescription" />
             <PropertyRef Name="StatusDescription" />
             <PropertyRef Name="TypeDescription" />
+            <PropertyRef Name="AssetAssignmentID" />
           </Key>
-          <Property Name="AssetAssignmentID" Type="Int32" />
+          <Property Name="AssetAssignmentID" Type="Int32" Nullable="false" />
           <Property Name="EmployeeID" Type="Int32" />
           <Property Name="FixAssetID" Type="Int32" />
           <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
@@ -855,6 +1030,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="DateAssigned" Type="DateTime" Precision="0" />
           <Property Name="DateReleased" Type="DateTime" Precision="0" />
           <Property Name="AssignmentRemarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="FromID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ToID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="vwAssetAssignmentsForCustodian">
           <Key>
@@ -889,6 +1066,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="AssignmentRemarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="AdminID" Type="Int32" Nullable="false" />
           <Property Name="DepartmentID" Type="Int32" Nullable="false" />
+          <Property Name="FromID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ToID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="vwAssetAssignmentsForManager">
           <Key>
@@ -923,6 +1102,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="AssignmentRemarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="ManagerID" Type="Int32" Nullable="false" />
           <Property Name="DepartmentID" Type="Int32" Nullable="false" />
+          <Property Name="FromID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ToID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="vwAssetAssignmentsForMI">
           <Key>
@@ -957,6 +1138,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="AssignmentRemarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="MISEmployeeID" Type="Int32" Nullable="false" />
           <Property Name="DepartmentID" Type="Int32" Nullable="false" />
+          <Property Name="FromID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ToID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="AssignmentStatu">
           <Key>
@@ -972,73 +1155,156 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <Property Name="ReasonCodeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ReasonCode1" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="vwFixAsset">
+        <EntityType Name="vwAccessRight">
           <Key>
-            <PropertyRef Name="FixAssetID" />
-            <PropertyRef Name="AssetTag" />
-            <PropertyRef Name="SerialNumber" />
-            <PropertyRef Name="AssetTypeID" />
-            <PropertyRef Name="TypeDescription" />
-            <PropertyRef Name="Brand" />
-            <PropertyRef Name="Model" />
-            <PropertyRef Name="AssetStatusID" />
-            <PropertyRef Name="StatusDescription" />
-            <PropertyRef Name="AssetClassID" />
-            <PropertyRef Name="ClassDescription" />
+            <PropertyRef Name="AccessID" />
+            <PropertyRef Name="EmployeeID" />
+            <PropertyRef Name="FullName" />
+            <PropertyRef Name="AccessMode" />
+            <PropertyRef Name="Status" />
           </Key>
-          <Property Name="FixAssetID" Type="Int32" Nullable="false" />
-          <Property Name="AssetTag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="AssetTypeID" Type="Int32" Nullable="false" />
-          <Property Name="TypeDescription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Brand" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Model" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="AcquisitionDate" Type="DateTime" Precision="0" />
-          <Property Name="IssuerID" Type="Int32" />
-          <Property Name="LocationID" Type="Int32" />
-          <Property Name="AssetStatusID" Type="Int32" Nullable="false" />
-          <Property Name="StatusDescription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="AssetClassID" Type="Int32" Nullable="false" />
-          <Property Name="ClassDescription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AccessID" Type="Int32" Nullable="false" />
+          <Property Name="EmployeeID" Type="Int32" Nullable="false" />
+          <Property Name="FullName" Type="String" Nullable="false" MaxLength="72" FixedLength="false" Unicode="true" />
+          <Property Name="AccessMode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int16" Nullable="false" />
         </EntityType>
-        <EntityType Name="vwEmployee">
+        <EntityType Name="vwDepartmentList">
+          <Key>
+            <PropertyRef Name="DepartmentID" />
+            <PropertyRef Name="DepartmentName" />
+          </Key>
+          <Property Name="DepartmentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartmentName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="vwEmployeeList">
           <Key>
             <PropertyRef Name="EmployeeID" />
             <PropertyRef Name="FirstName" />
             <PropertyRef Name="LastName" />
+            <PropertyRef Name="FullName" />
             <PropertyRef Name="Gender" />
             <PropertyRef Name="EmailAddress" />
             <PropertyRef Name="DepartmentID" />
             <PropertyRef Name="PositionID" />
             <PropertyRef Name="IsCompany" />
             <PropertyRef Name="Status" />
-            <PropertyRef Name="DepartmentName" />
-            <PropertyRef Name="Description" />
           </Key>
           <Property Name="EmployeeID" Type="Int32" Nullable="false" />
           <Property Name="FirstName" Type="String" Nullable="false" MaxLength="35" FixedLength="false" Unicode="true" />
           <Property Name="MiddleName" Type="String" MaxLength="35" FixedLength="false" Unicode="true" />
           <Property Name="LastName" Type="String" Nullable="false" MaxLength="35" FixedLength="false" Unicode="true" />
+          <Property Name="FullName" Type="String" Nullable="false" MaxLength="106" FixedLength="false" Unicode="true" />
           <Property Name="ManagerID" Type="Int32" />
           <Property Name="Gender" Type="String" Nullable="false" MaxLength="6" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="true" />
           <Property Name="DepartmentID" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="PositionID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="IsCompany" Type="Int16" Nullable="false" />
           <Property Name="CompanyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Status" Type="Int16" Nullable="false" />
-          <Property Name="DepartmentName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="AccessLevel">
+        <EntityType Name="vwFixAssetList">
           <Key>
-            <PropertyRef Name="AccessLevel1" />
+            <PropertyRef Name="FixAssetID" />
+            <PropertyRef Name="Model" />
+            <PropertyRef Name="SerialNumber" />
+            <PropertyRef Name="AssetTag" />
+            <PropertyRef Name="Brand" />
+            <PropertyRef Name="AssetTypeID" />
+            <PropertyRef Name="AssetClassID" />
+            <PropertyRef Name="AssetStatusID" />
           </Key>
-          <Property Name="AccessLevel1" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="AccessDescription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FixAssetID" Type="Int32" Nullable="false" />
+          <Property Name="Model" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AssetTag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="AcquisitionDate" Type="DateTime" Precision="0" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <Property Name="IssuerID" Type="Int32" />
+          <Property Name="IssuerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IssuerType" Type="Int32" />
+          <Property Name="LocationID" Type="Int32" />
+          <Property Name="LocationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Country" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="AssetTypeID" Type="Int32" Nullable="false" />
+          <Property Name="TypeDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AssetClassID" Type="Int32" Nullable="false" />
+          <Property Name="ClassDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AssetStatusID" Type="Int32" Nullable="false" />
+          <Property Name="StatusDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="vwFixAsset">
+          <Key>
+            <PropertyRef Name="FixAssetID" />
+            <PropertyRef Name="Model" />
+            <PropertyRef Name="SerialNumber" />
+            <PropertyRef Name="AssetTag" />
+            <PropertyRef Name="Brand" />
+            <PropertyRef Name="AssetTypeID" />
+            <PropertyRef Name="AssetClassID" />
+            <PropertyRef Name="AssetStatusID" />
+          </Key>
+          <Property Name="FixAssetID" Type="Int32" Nullable="false" />
+          <Property Name="Model" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AssetTag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="AcquisitionDate" Type="DateTime" Precision="0" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <Property Name="IssuerID" Type="Int32" />
+          <Property Name="IssuerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IssuerType" Type="Int32" />
+          <Property Name="LocationID" Type="Int32" />
+          <Property Name="LocationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Country" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="AssetTypeID" Type="Int32" Nullable="false" />
+          <Property Name="TypeDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AssetClassID" Type="Int32" Nullable="false" />
+          <Property Name="ClassDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AssetStatusID" Type="Int32" Nullable="false" />
+          <Property Name="StatusDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="vwEmployee">
+          <Key>
+            <PropertyRef Name="EmployeeID" />
+            <PropertyRef Name="FirstName" />
+            <PropertyRef Name="LastName" />
+            <PropertyRef Name="FullName" />
+            <PropertyRef Name="Gender" />
+            <PropertyRef Name="EmailAddress" />
+            <PropertyRef Name="DepartmentID" />
+            <PropertyRef Name="PositionID" />
+            <PropertyRef Name="IsCompany" />
+            <PropertyRef Name="Status" />
+          </Key>
+          <Property Name="EmployeeID" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="35" FixedLength="false" Unicode="true" />
+          <Property Name="MiddleName" Type="String" MaxLength="35" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="35" FixedLength="false" Unicode="true" />
+          <Property Name="FullName" Type="String" Nullable="false" MaxLength="106" FixedLength="false" Unicode="true" />
+          <Property Name="ManagerID" Type="Int32" />
+          <Property Name="Gender" Type="String" Nullable="false" MaxLength="6" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="DepartmentID" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PositionID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsCompany" Type="Int16" Nullable="false" />
+          <Property Name="CompanyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int16" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1226,6 +1492,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySetMapping Name="vwAssetAssignments">
             <EntityTypeMapping TypeName="FASTDBModel.vwAssetAssignment">
               <MappingFragment StoreEntitySet="vwAssetAssignments">
+                <ScalarProperty Name="ToID" ColumnName="ToID" />
+                <ScalarProperty Name="FromID" ColumnName="FromID" />
                 <ScalarProperty Name="AssignmentRemarks" ColumnName="AssignmentRemarks" />
                 <ScalarProperty Name="DateReleased" ColumnName="DateReleased" />
                 <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
@@ -1254,6 +1522,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySetMapping Name="vwAssetAssignmentsForCustodians">
             <EntityTypeMapping TypeName="FASTDBModel.vwAssetAssignmentsForCustodian">
               <MappingFragment StoreEntitySet="vwAssetAssignmentsForCustodians">
+                <ScalarProperty Name="ToID" ColumnName="ToID" />
+                <ScalarProperty Name="FromID" ColumnName="FromID" />
                 <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
                 <ScalarProperty Name="AdminID" ColumnName="AdminID" />
                 <ScalarProperty Name="AssignmentRemarks" ColumnName="AssignmentRemarks" />
@@ -1284,6 +1554,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySetMapping Name="vwAssetAssignmentsForManagers">
             <EntityTypeMapping TypeName="FASTDBModel.vwAssetAssignmentsForManager">
               <MappingFragment StoreEntitySet="vwAssetAssignmentsForManagers">
+                <ScalarProperty Name="ToID" ColumnName="ToID" />
+                <ScalarProperty Name="FromID" ColumnName="FromID" />
                 <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
                 <ScalarProperty Name="ManagerID" ColumnName="ManagerID" />
                 <ScalarProperty Name="AssignmentRemarks" ColumnName="AssignmentRemarks" />
@@ -1314,6 +1586,8 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
           <EntitySetMapping Name="vwAssetAssignmentsForMIS">
             <EntityTypeMapping TypeName="FASTDBModel.vwAssetAssignmentsForMI">
               <MappingFragment StoreEntitySet="vwAssetAssignmentsForMIS">
+                <ScalarProperty Name="ToID" ColumnName="ToID" />
+                <ScalarProperty Name="FromID" ColumnName="FromID" />
                 <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
                 <ScalarProperty Name="MISEmployeeID" ColumnName="MISEmployeeID" />
                 <ScalarProperty Name="AssignmentRemarks" ColumnName="AssignmentRemarks" />
@@ -1357,42 +1631,44 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vwFixAssets">
-            <EntityTypeMapping TypeName="FASTDBModel.vwFixAsset">
-              <MappingFragment StoreEntitySet="vwFixAssets">
-                <ScalarProperty Name="ClassDescription" ColumnName="ClassDescription" />
-                <ScalarProperty Name="AssetClassID" ColumnName="AssetClassID" />
-                <ScalarProperty Name="StatusDescription" ColumnName="StatusDescription" />
-                <ScalarProperty Name="AssetStatusID" ColumnName="AssetStatusID" />
-                <ScalarProperty Name="LocationID" ColumnName="LocationID" />
-                <ScalarProperty Name="IssuerID" ColumnName="IssuerID" />
-                <ScalarProperty Name="AcquisitionDate" ColumnName="AcquisitionDate" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="Model" ColumnName="Model" />
-                <ScalarProperty Name="Brand" ColumnName="Brand" />
-                <ScalarProperty Name="TypeDescription" ColumnName="TypeDescription" />
-                <ScalarProperty Name="AssetTypeID" ColumnName="AssetTypeID" />
-                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
-                <ScalarProperty Name="AssetTag" ColumnName="AssetTag" />
-                <ScalarProperty Name="FixAssetID" ColumnName="FixAssetID" />
+          <EntitySetMapping Name="vwAccessRights">
+            <EntityTypeMapping TypeName="FASTDBModel.vwAccessRight">
+              <MappingFragment StoreEntitySet="vwAccessRights">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="AccessMode" ColumnName="AccessMode" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+                <ScalarProperty Name="AccessID" ColumnName="AccessID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vwEmployees">
-            <EntityTypeMapping TypeName="FASTDBModel.vwEmployee">
-              <MappingFragment StoreEntitySet="vwEmployees">
-                <ScalarProperty Name="Description" ColumnName="Description" />
+          <EntitySetMapping Name="vwDepartmentLists">
+            <EntityTypeMapping TypeName="FASTDBModel.vwDepartmentList">
+              <MappingFragment StoreEntitySet="vwDepartmentList">
                 <ScalarProperty Name="GroupName" ColumnName="GroupName" />
                 <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
+                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwEmployeeLists">
+            <EntityTypeMapping TypeName="FASTDBModel.vwEmployeeList">
+              <MappingFragment StoreEntitySet="vwEmployeeList">
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
                 <ScalarProperty Name="IsCompany" ColumnName="IsCompany" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="PositionID" ColumnName="PositionID" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
                 <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
                 <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
                 <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
                 <ScalarProperty Name="Gender" ColumnName="Gender" />
                 <ScalarProperty Name="ManagerID" ColumnName="ManagerID" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -1400,11 +1676,78 @@ warning 6002: The table/view 'FASTDB.dbo.vwMISList' does not have a primary key 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AccessLevels">
-            <EntityTypeMapping TypeName="FASTDBModel.AccessLevel">
-              <MappingFragment StoreEntitySet="AccessLevel">
-                <ScalarProperty Name="AccessDescription" ColumnName="AccessDescription" />
-                <ScalarProperty Name="AccessLevel1" ColumnName="AccessLevel" />
+          <EntitySetMapping Name="vwFixAssetLists">
+            <EntityTypeMapping TypeName="FASTDBModel.vwFixAssetList">
+              <MappingFragment StoreEntitySet="vwFixAssetList">
+                <ScalarProperty Name="StatusDescription" ColumnName="StatusDescription" />
+                <ScalarProperty Name="AssetStatusID" ColumnName="AssetStatusID" />
+                <ScalarProperty Name="ClassDescription" ColumnName="ClassDescription" />
+                <ScalarProperty Name="AssetClassID" ColumnName="AssetClassID" />
+                <ScalarProperty Name="TypeDescription" ColumnName="TypeDescription" />
+                <ScalarProperty Name="AssetTypeID" ColumnName="AssetTypeID" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LocationID" ColumnName="LocationID" />
+                <ScalarProperty Name="IssuerType" ColumnName="IssuerType" />
+                <ScalarProperty Name="IssuerName" ColumnName="IssuerName" />
+                <ScalarProperty Name="IssuerID" ColumnName="IssuerID" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="AcquisitionDate" ColumnName="AcquisitionDate" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="AssetTag" ColumnName="AssetTag" />
+                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="FixAssetID" ColumnName="FixAssetID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwFixAssets">
+            <EntityTypeMapping TypeName="FASTDBModel.vwFixAsset">
+              <MappingFragment StoreEntitySet="vwFixAssets">
+                <ScalarProperty Name="StatusDescription" ColumnName="StatusDescription" />
+                <ScalarProperty Name="AssetStatusID" ColumnName="AssetStatusID" />
+                <ScalarProperty Name="ClassDescription" ColumnName="ClassDescription" />
+                <ScalarProperty Name="AssetClassID" ColumnName="AssetClassID" />
+                <ScalarProperty Name="TypeDescription" ColumnName="TypeDescription" />
+                <ScalarProperty Name="AssetTypeID" ColumnName="AssetTypeID" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LocationID" ColumnName="LocationID" />
+                <ScalarProperty Name="IssuerType" ColumnName="IssuerType" />
+                <ScalarProperty Name="IssuerName" ColumnName="IssuerName" />
+                <ScalarProperty Name="IssuerID" ColumnName="IssuerID" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="AcquisitionDate" ColumnName="AcquisitionDate" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="AssetTag" ColumnName="AssetTag" />
+                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="FixAssetID" ColumnName="FixAssetID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwEmployees">
+            <EntityTypeMapping TypeName="FASTDBModel.vwEmployee">
+              <MappingFragment StoreEntitySet="vwEmployees">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="IsCompany" ColumnName="IsCompany" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PositionID" ColumnName="PositionID" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
+                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="ManagerID" ColumnName="ManagerID" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

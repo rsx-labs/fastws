@@ -14,7 +14,7 @@ namespace FASTWSv1
     
     public partial class vwAssetAssignment
     {
-        public Nullable<int> AssetAssignmentID { get; set; }
+        public int AssetAssignmentID { get; set; }
         public Nullable<int> EmployeeID { get; set; }
         public Nullable<int> FixAssetID { get; set; }
         public string Model { get; set; }
@@ -36,5 +36,7 @@ namespace FASTWSv1
         public Nullable<System.DateTime> DateAssigned { get; set; }
         public Nullable<System.DateTime> DateReleased { get; set; }
         public string AssignmentRemarks { get; set; }
+        public string FromID { get; set; }
+        public string ToID { get; set; }
     }
 }

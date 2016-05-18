@@ -15,19 +15,24 @@ namespace FASTWSv1
     public partial class vwFixAsset
     {
         public int FixAssetID { get; set; }
-        public string AssetTag { get; set; }
-        public string SerialNumber { get; set; }
-        public int AssetTypeID { get; set; }
-        public string TypeDescription { get; set; }
-        public string Brand { get; set; }
         public string Model { get; set; }
+        public string SerialNumber { get; set; }
+        public string AssetTag { get; set; }
+        public string Brand { get; set; }
         public string Remarks { get; set; }
         public Nullable<System.DateTime> AcquisitionDate { get; set; }
+        public Nullable<System.DateTime> ExpiryDate { get; set; }
         public Nullable<int> IssuerID { get; set; }
+        public string IssuerName { get; set; }
+        public Nullable<int> IssuerType { get; set; }
         public Nullable<int> LocationID { get; set; }
-        public int AssetStatusID { get; set; }
-        public string StatusDescription { get; set; }
+        public string LocationName { get; set; }
+        public string Country { get; set; }
+        public int AssetTypeID { get; set; }
+        public string TypeDescription { get; set; }
         public int AssetClassID { get; set; }
         public string ClassDescription { get; set; }
+        public int AssetStatusID { get; set; }
+        public string StatusDescription { get; set; }
     }
 }

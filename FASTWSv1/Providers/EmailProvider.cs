@@ -163,7 +163,7 @@ namespace FASTWSv1.Providers
             BO.EmployeeProcess empProcess = new BO.EmployeeProcess();
             vwAssetAssignment assignment = assProcess.GetAssignmentViewByID(assignmentID);
             vwFixAsset asset = new vwFixAsset();
-            vwEmployee employee = new vwEmployee();
+            vwEmployeeList employee = new vwEmployeeList();
 
             List<string> receipients = new List<string>();
             List<string> ccReceipients = new List<string>();
@@ -320,7 +320,7 @@ namespace FASTWSv1.Providers
                     break;
                 case EmailType.TRANSFER_WOAPPROVAL_DONE:
 
-                    vwEmployee requestor = empProcess.GetEmployeeViewByID(requestorID);
+                    vwEmployeeList requestor = empProcess.GetEmployeeViewByID(requestorID);
                     emailTemplate = GetTemplate("Transfer_Done.html");
                     emailBody = BuildAssignmentEmailBody(assignment, emailTemplate, requestor.FirstName + " " + requestor.LastName);
                     emailSubj = String.Format("FASTrack : Asset Assignment REF#{0}", assignmentID);
@@ -369,7 +369,7 @@ namespace FASTWSv1.Providers
                     
                     //Inform the requestor
                     requestor = empProcess.GetEmployeeViewByID(requestorID);
-                    vwEmployee receivingEmployee = empProcess.GetEmployeeViewByID(receipientID);
+                    vwEmployeeList receivingEmployee = empProcess.GetEmployeeViewByID(receipientID);
 
                     emailTemplate = GetTemplate("Transfer_Request.html");
                     emailBody = BuildAssignmentEmailBody(assignment, emailTemplate, requestor.FirstName + " " + requestor.LastName,

@@ -179,9 +179,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessLevel.cs">
-      <DependentUpon>FASTDBEntities.tt</DependentUpon>
-    </Compile>
     <Compile Include="AccessRight.cs">
       <DependentUpon>FASTDBEntities.tt</DependentUpon>
     </Compile>
@@ -309,6 +306,9 @@
     </Compile>
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="vwAccessRight.cs">
+      <DependentUpon>FASTDBEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="vwAssetAssignment.cs">
       <DependentUpon>FASTDBEntities.tt</DependentUpon>
     </Compile>
@@ -324,10 +324,19 @@
     <Compile Include="vwCustodiansList.cs">
       <DependentUpon>FASTDBEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="vwDepartmentList.cs">
+      <DependentUpon>FASTDBEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="vwEmployee.cs">
       <DependentUpon>FASTDBEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="vwEmployeeList.cs">
+      <DependentUpon>FASTDBEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="vwFixAsset.cs">
+      <DependentUpon>FASTDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vwFixAssetList.cs">
       <DependentUpon>FASTDBEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="vwManagersList.cs">
@@ -423,6 +432,9 @@
     <None Include="Properties\PublishProfiles\v0450.pubxml" />
     <None Include="Properties\PublishProfiles\v0500.pubxml" />
     <None Include="Properties\PublishProfiles\v0501.pubxml" />
+    <None Include="Properties\PublishProfiles\v502.pubxml" />
+    <None Include="Properties\PublishProfiles\v503.pubxml" />
+    <None Include="Properties\PublishProfiles\v504.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

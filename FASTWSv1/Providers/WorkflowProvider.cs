@@ -35,7 +35,7 @@ namespace FASTWSv1.Providers
 
             Dictionary<string, int> result = new Dictionary<string, int>();
 
-            FixAsset asset = assetProcess.GetAssetByID(assetID);
+            vwFixAssetList asset = assetProcess.GetAssetByID(assetID);
             AssetAssignment assignment = new AssetAssignment();
 
             if ( assignmentID > 0 )

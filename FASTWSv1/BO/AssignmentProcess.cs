@@ -87,7 +87,7 @@ namespace FASTWSv1.BO
             //Lets get the equipment info
             BO.AssetProcess assetProcess = new AssetProcess();
             BO.EmployeeProcess employeeProcess = new EmployeeProcess();
-            FixAsset asset = assetProcess.GetAssetBySerialNumber(model.SerialNumber);
+            vwFixAssetList asset = assetProcess.GetAssetBySerialNumber(model.SerialNumber);
             Providers.EmailProvider email = new Providers.EmailProvider();
             int result = 0;
             bool isITAsset = false;
@@ -132,7 +132,7 @@ namespace FASTWSv1.BO
             BO.AssetProcess assetProcess = new AssetProcess();
             BO.EmployeeProcess employeeProcess = new EmployeeProcess();
             Providers.EmailProvider email = new Providers.EmailProvider();
-            FixAsset asset = assetProcess.GetAssetByAssetTag(model.AssetTag);
+            vwFixAssetList asset = assetProcess.GetAssetByAssetTag(model.AssetTag);
 
             int result = 0;
 
@@ -374,7 +374,7 @@ namespace FASTWSv1.BO
             Providers.EmailProvider email = new Providers.EmailProvider();
             List<FixAsset> assetInQuestion;
             string optionalRemarks = string.Empty;
-            vwEmployee employee = new vwEmployee();
+            vwEmployeeList employee = new vwEmployeeList();
 
             using ( var db = new FASTDBEntities())
             {
@@ -707,13 +707,11 @@ namespace FASTWSv1.BO
                     newAssignment.OptionalRemarks = model.OptionalRemarks;
                     
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
+                    assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                    assignment.DateReleased = DateTime.Now;
+        
                     if (db.SaveChanges() > 0)
                     {
-                        assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
-                        assignment.DateReleased = DateTime.Now;
-        
-                        if (db.SaveChanges() > 0)
-                        {
                             if ( asset.AssetClassID == Constants.ASSET_CLASS_IT)
                             {
                                 result = TransferITAssetToEmployee(asset.FixAssetID, model.ReceipientID, assignment.EmployeeID, model.OptionalRemarks);
@@ -766,11 +764,8 @@ namespace FASTWSv1.BO
                             return ReturnValues.FAILED;
                         }
                     }
-                    else
-                    {
-                        return ReturnValues.FAILED;
-                    }
-                }
+                    
+                
 
             }
             return ReturnValues.FAILED;

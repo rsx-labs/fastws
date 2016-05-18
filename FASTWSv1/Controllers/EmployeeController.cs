@@ -14,11 +14,11 @@ namespace FASTWSv1.Controllers
     {
         [HttpGet]
         [Route("EmployeeID/{employeeID}")]
-        public Employee GetEmployeeByID(int employeeID)
+        public vwEmployeeList GetEmployeeByID(int employeeID)
         {
             BO.EmployeeProcess employeeProcess = new BO.EmployeeProcess();
 
-            return employeeProcess.GetEmployeeByID(employeeID);
+            return employeeProcess.GetEmployeeViewByID(employeeID);
         }
 
         [HttpGet]
