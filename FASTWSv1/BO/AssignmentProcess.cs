@@ -1095,6 +1095,7 @@ namespace FASTWSv1.BO
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
                     assignment.DateReleased = DateTime.Now;
+                    asset.Remarks = model.ReasonCode.ToString();
 
                     if (db.SaveChanges() != 0)
                     {
@@ -1167,7 +1168,7 @@ namespace FASTWSv1.BO
                         if (Helpers.ConfigurationHelper.SendEmail)
                         {
                             //Inform the managers about the request for approval.
-                            email.SendAssignmentEmail(EmailProvider.EmailType.RELEASE_REQUEST_WTAPPROVAL, assignment.AssetAssignmentID);
+                            email.SendAssignmentEmail(EmailProvider.EmailType.RELEASE_REQUEST_WTAPPROVAL, assignment.AssetAssignmentID,"","",model.RequestorID,0);
                             //inform the requestor that the request was sent.
                             email.SendAssignmentEmail(EmailProvider.EmailType.RELEASE_REQUEST_CONFIRMATION, assignment.AssetAssignmentID, "", "", model.RequestorID, 0);
                         }
