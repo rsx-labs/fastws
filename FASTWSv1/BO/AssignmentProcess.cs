@@ -709,6 +709,7 @@ namespace FASTWSv1.BO
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
                     assignment.DateReleased = DateTime.Now;
+                    assignment.Remarks = model.OptionalRemarks;
         
                     if (db.SaveChanges() > 0)
                     {
@@ -805,6 +806,7 @@ namespace FASTWSv1.BO
                     if ( db.SaveChanges() > 0)
                     {
                         assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                        assignment.Remarks = model.OptionalRemarks;
                         
                         if ( !model.ToMIS)
                         {
@@ -866,6 +868,7 @@ namespace FASTWSv1.BO
                             asset.AssetStatusID = prevAssetStatus;
                             assignment.ToID = prevToID;
                             assignment.FromID = prevFromID;
+                            assignment.Remarks = String.Empty;
 
                             db.SaveChanges();
                             return ReturnValues.FAILED;
@@ -940,6 +943,7 @@ namespace FASTWSv1.BO
                     {
                         assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
                         assignment.ToID = model.ReceipientID.ToString();
+                        assignment.DateReleased = DateTime.Now;
 
                         if (db.SaveChanges() > 0)
                         {
@@ -1096,6 +1100,7 @@ namespace FASTWSv1.BO
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
                     assignment.DateReleased = DateTime.Now;
                     asset.Remarks = model.ReasonCode.ToString();
+                    assignment.Remarks = model.OptionalRemarks;
 
                     if (db.SaveChanges() != 0)
                     {
@@ -1156,6 +1161,7 @@ namespace FASTWSv1.BO
 
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                    assignment.Remarks = model.OptionalRemarks;
 
                     if (db.SaveChanges() != 0)
                     {
