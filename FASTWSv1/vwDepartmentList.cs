@@ -12,14 +12,10 @@ namespace FASTWSv1
     using System;
     using System.Collections.Generic;
     
-    public partial class AuditTrail
+    public partial class vwDepartmentList
     {
-        public long AuditTrailID { get; set; }
-        public System.DateTime Date { get; set; }
-        public int EmployeeID { get; set; }
-        public string Action { get; set; }
-        public string AdditionalInformation { get; set; }
-        public string AssignmentID { get; set; }
-        public string AssetTag { get; set; }
+        public int DepartmentID { get; set; }
+        public string DepartmentName { get; set; }
+        public string GroupName { get; set; }
     }
 }

@@ -1,9 +1,14 @@
 ﻿<body>
-    <h1>Asset Assignment</h1>
+    <div style="position:relative; min-height:100px; width:inherit;background-color:firebrick;color:white">
+        <div style="position:absolute;bottom:0;left:20px">
+            <h1>Asset Assignment</h1>
+            <p style="font-size:10px">FASTRACK Notification System</p>
+        </div>
+    </div>
     <br/>
-    <p>Hi {0},</p>
-    <br/>
-    <p>A new asset has been assigned to you. Please collect the assets and perform the standard test before releasing it to the employee. See details below :</p>
+    <p>Hi {0},
+    <br/><br />
+    A new asset has been assigned to you. Please collect the assets and perform the standard test before releasing it to the employee. See details below :</p>
     <br/>
     <hr>
     <table border="1" style="border-collapse:collapse">
@@ -36,14 +41,18 @@
             <td style="padding:15px" colspan="6">{9}</td>
         </tr>
         <tr>
-            <td style="padding:15px;background-color:gray">Remarks</td>
+            <td style="background-color:gray;padding:15px">Date Released</td>
             <td style="padding:15px" colspan="6">{10}</td>
+        </tr>
+        <tr>
+            <td style="padding:15px;background-color:gray">Remarks</td>
+            <td style="padding:15px" colspan="6">{11}</td>
         </tr>
     </table>
     <hr>
     <br/>
-    <p>Thanks,</p>
-    <p>App Admin</p>
+    <p>Thanks,<br /><br />
+    App Admin</p>
     <br/>
     <p>Note:</p>
     <p>This is an automatically generated email.This email does not respond to any replies sent to this address. Please contact the app admin for issues.</p>

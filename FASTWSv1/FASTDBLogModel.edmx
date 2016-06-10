@@ -14,12 +14,9 @@
           <Property Name="EmployeeID" Type="int" Nullable="false" />
           <Property Name="Action" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="AdditionalInformation" Type="text" />
+          <Property Name="AssetTag" Type="nvarchar" MaxLength="50" />
+          <Property Name="AssignmentID" Type="nvarchar" MaxLength="50" />
         </EntityType>
-        <Function Name="InsertToAuditTrail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="employeeID" Type="int" Mode="In" />
-          <Parameter Name="action" Type="nvarchar" Mode="In" />
-          <Parameter Name="extraInfo" Type="nvarchar" Mode="In" />
-        </Function>
         <EntityContainer Name="FASTDBLogModelStoreContainer">
           <EntitySet Name="AuditTrail" EntityType="Self.AuditTrail" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
@@ -36,6 +33,8 @@
           <Property Name="EmployeeID" Type="Int32" Nullable="false" />
           <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="AdditionalInformation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="AssignmentID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="AssetTag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityContainer Name="FASTDBLogEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AuditTrails" EntityType="Self.AuditTrail" />
@@ -43,6 +42,8 @@
             <Parameter Name="employeeID" Mode="In" Type="Int32" />
             <Parameter Name="action" Mode="In" Type="String" />
             <Parameter Name="extraInfo" Mode="In" Type="String" />
+            <Parameter Name="assignmentID" Mode="In" Type="Int32" />
+            <Parameter Name="assetID" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
       </Schema>
@@ -54,6 +55,8 @@
           <EntitySetMapping Name="AuditTrails">
             <EntityTypeMapping TypeName="FASTDBLogModel.AuditTrail">
               <MappingFragment StoreEntitySet="AuditTrail">
+                <ScalarProperty Name="AssetTag" ColumnName="AssetTag" />
+                <ScalarProperty Name="AssignmentID" ColumnName="AssignmentID" />
                 <ScalarProperty Name="AuditTrailID" ColumnName="AuditTrailID" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
@@ -62,7 +65,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="InsertToAuditTrail" FunctionName="FASTDBLogModel.Store.InsertToAuditTrail" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

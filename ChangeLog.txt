@@ -3,3 +3,5 @@ Change Log
 ******************************************************************************
 v0.0.1.0 - trashvin - 10/24/2015 
 Initial Version
+v0.5.0.0 - trashvin - 03/11/2015
+Almost working version. 

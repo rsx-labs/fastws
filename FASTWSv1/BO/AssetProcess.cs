@@ -10,11 +10,11 @@ namespace FASTWSv1.BO
 {
     public class AssetProcess
     {
-        public FixAsset GetAssetByID(int assetID)
+        public vwFixAssetList GetAssetByID(int assetID)
         {
             using (var db = new FASTDBEntities())
             {
-                FixAsset[] assets = (from asset in db.FixAssets
+                vwFixAssetList[] assets = (from asset in db.vwFixAssetLists
                                      where asset.FixAssetID == assetID
                                      select asset).ToArray();
 
@@ -30,11 +30,11 @@ namespace FASTWSv1.BO
             }
         }
 
-        public FixAsset GetAssetByAssetTag(string assetTag)
+        public vwFixAssetList GetAssetByAssetTag(string assetTag)
         {
             using (var db = new FASTDBEntities())
             {
-                FixAsset[] assets = (from asset in db.FixAssets
+                vwFixAssetList[] assets = (from asset in db.vwFixAssetLists
                                      where (0 == String.Compare(assetTag, asset.AssetTag))
                                      select asset).ToArray();
 
@@ -49,11 +49,11 @@ namespace FASTWSv1.BO
             }
         }
 
-        public FixAsset GetAssetBySerialNumber(string serialNumber)
+        public vwFixAssetList GetAssetBySerialNumber(string serialNumber)
         {
             using (var db = new FASTDBEntities())
             {
-                FixAsset[] assets = (from asset in db.FixAssets
+                vwFixAssetList[] assets = (from asset in db.vwFixAssetLists
                                      where (0 == String.Compare(serialNumber, asset.SerialNumber))
                                      select asset).ToArray();
 
@@ -68,11 +68,11 @@ namespace FASTWSv1.BO
             }
         }
 
-        public FixAsset GetAssetbyIssuerID(int issuerID)
+        public vwFixAssetList GetAssetbyIssuerID(int issuerID)
         {
             using ( var db = new FASTDBEntities())
             {
-                FixAsset[] assets = (from asset in db.FixAssets
+                vwFixAssetList[] assets = (from asset in db.vwFixAssetLists
                                      where asset.IssuerID == issuerID
                                      select asset).ToArray();
 
@@ -151,5 +151,15 @@ namespace FASTWSv1.BO
         }
 
 
-     }
+
+        internal List<AssetType> GetAssetTypes(int assetClass)
+        {
+            using ( var db = new FASTDBEntities())
+            {
+                return (from types in db.AssetTypes
+                        where types.AssetClassID == assetClass
+                        select types).ToList();
+            }
+        }
+    }
 }

@@ -1,9 +1,13 @@
 ﻿<body>
-    <h1>Asset Transfer</h1>
-    <br/>
-    <p>Dear {0},</p>
-    <br/>
-    <p>This is to inform you that your request for transfer of the asset below was successfully sent for approval.</p>
+    <div style="position:relative; min-height:100px; width:inherit;background-color:firebrick;color:white">
+        <div style="position:absolute;bottom:0;left:20px">
+            <h1>Asset Transfer</h1>
+            <p style="font-size:10px">FASTRACK Notification System</p>
+        </div>
+    </div>
+    <p>Dear {0},
+    <br/><br />
+    This is to inform you that your request for transfer of the asset below was successfully sent for approval.</p>
     <br/>
     <hr>
     <table border="1" style="border-collapse:collapse">
@@ -36,8 +40,12 @@
             <td style="padding:15px" colspan="6">{9}</td>
         </tr>
         <tr>
-            <td style="padding:15px;background-color:gray">Remarks</td>
+            <td style="background-color:gray;padding:15px">Date Released</td>
             <td style="padding:15px" colspan="6">{10}</td>
+        </tr>
+        <tr>
+            <td style="padding:15px;background-color:gray">Remarks</td>
+            <td style="padding:15px" colspan="6">{11}</td>
         </tr>
     </table>
     <hr>

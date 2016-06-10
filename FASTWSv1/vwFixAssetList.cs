@@ -12,7 +12,7 @@ namespace FASTWSv1
     using System;
     using System.Collections.Generic;
     
-    public partial class vwFixAsset
+    public partial class vwFixAssetList
     {
         public int FixAssetID { get; set; }
         public string Model { get; set; }

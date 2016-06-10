@@ -48,6 +48,10 @@ namespace FASTWSv1
         public virtual DbSet<vwAssetAssignmentsForMI> vwAssetAssignmentsForMIS { get; set; }
         public virtual DbSet<AssignmentStatu> AssignmentStatus { get; set; }
         public virtual DbSet<ReasonCode> ReasonCodes { get; set; }
+        public virtual DbSet<vwAccessRight> vwAccessRights { get; set; }
+        public virtual DbSet<vwDepartmentList> vwDepartmentLists { get; set; }
+        public virtual DbSet<vwEmployeeList> vwEmployeeLists { get; set; }
+        public virtual DbSet<vwFixAssetList> vwFixAssetLists { get; set; }
         public virtual DbSet<vwFixAsset> vwFixAssets { get; set; }
         public virtual DbSet<vwEmployee> vwEmployees { get; set; }
     

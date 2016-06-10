@@ -36,7 +36,7 @@ namespace FASTWSv1.BO
             using (var db = new FASTDBEntities())
             {
                 List<vwAssetAssignment> assignments = ( from assign in db.vwAssetAssignments
-                                                        where assign.EmployeeID == employeeID && assign.AssignmentStatusID == Constants.ASSIGNMENT_STATUS_ACCEPTED
+                                                        where assign.EmployeeID == employeeID && assign.AssignmentStatusID == Constants.ASSIGNMENT_STATUS_ACCEPTED && assign.AssetStatusID == Constants.ASSET_STATUS_ASSIGNED
                                                        select assign).ToList();
 
                 if (assignments.Count() > 0)
@@ -87,7 +87,7 @@ namespace FASTWSv1.BO
             //Lets get the equipment info
             BO.AssetProcess assetProcess = new AssetProcess();
             BO.EmployeeProcess employeeProcess = new EmployeeProcess();
-            FixAsset asset = assetProcess.GetAssetBySerialNumber(model.SerialNumber);
+            vwFixAssetList asset = assetProcess.GetAssetBySerialNumber(model.SerialNumber);
             Providers.EmailProvider email = new Providers.EmailProvider();
             int result = 0;
             bool isITAsset = false;
@@ -115,7 +115,7 @@ namespace FASTWSv1.BO
                 }
                 //Lets add it to Audit trail
                 Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ASSIGN_ASSET, model.AssigningEmpID,
-                    String.Format("Assigned asset {0} to {1}.", asset.AssetTag, model.ReceipientEmpID.ToString()));
+                    String.Format("Assigned asset {0} to {1}.", asset.AssetTag, model.ReceipientEmpID.ToString()),asset.AssetTag, result);
 
                 return result;
 
@@ -132,7 +132,7 @@ namespace FASTWSv1.BO
             BO.AssetProcess assetProcess = new AssetProcess();
             BO.EmployeeProcess employeeProcess = new EmployeeProcess();
             Providers.EmailProvider email = new Providers.EmailProvider();
-            FixAsset asset = assetProcess.GetAssetByAssetTag(model.AssetTag);
+            vwFixAssetList asset = assetProcess.GetAssetByAssetTag(model.AssetTag);
 
             int result = 0;
 
@@ -158,7 +158,7 @@ namespace FASTWSv1.BO
                 }
                 //Lets add it to Audit trail
                 Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ASSIGN_ASSET, model.AssigningEmpID,
-                    String.Format("Assigned asset {0} to {1}.", asset.AssetTag, model.ReceipientEmpID.ToString()));
+                    String.Format("Assigned asset {0} to {1}.", asset.AssetTag, model.ReceipientEmpID.ToString()),asset.AssetTag, result);
 
                 return result;
             }
@@ -227,7 +227,7 @@ namespace FASTWSv1.BO
             return ReturnValues.FAILED;
         }
 
-        private int TransferITAssetToEmployee(int assetID, int employeeID, string optionalMessage = "")
+        private int TransferITAssetToEmployee(int assetID, int employeeID, int fromEmpID, string optionalMessage = "")
         {
             BO.AssetProcess assetProcess = new AssetProcess();
 
@@ -246,6 +246,7 @@ namespace FASTWSv1.BO
                             WorkflowProvider.GetNextStatus(WorkflowProvider.ActionType.ASSET_TRANSFER_APPROVED, assetID, 0);
 
                 newAssignment.AssignmentStatusID = nextStatus["NAA"];
+                newAssignment.FromID = fromEmpID.ToString();
 
                 List<AssetAssignment> duplicates = (from dup in db.AssetAssignments
                                                     where ((dup.EmployeeID == employeeID) && (dup.FixAssetID == assetID) && (dup.AssignmentStatusID != Constants.ASSIGNMENT_STATUS_RELEASED))
@@ -259,17 +260,9 @@ namespace FASTWSv1.BO
 
                     if (null != result)
                     {
-                        //Seems like we have a successful add
-                        //Lets change asset status to Assigned to MIS
-
-                        if (assetProcess.UpdateAssetStatus(assetID, nextStatus[Constants.ASSET_STATUS]) == ReturnValues.SUCCESS)
-                        {
-                            //return new assetassignmentID
-                            return result.AssetAssignmentID;
-                        }
-                        //we had problem updating the status
-                        return ReturnValues.FAILED;
-                    }
+                        //return new assetassignmentID
+                        return result.AssetAssignmentID;
+                    }                   
                 }
                 else
                 {
@@ -294,7 +287,7 @@ namespace FASTWSv1.BO
                 newAssignment.EmployeeID = employeeID;
                 newAssignment.DateAssigned = DateTime.Now;
                 newAssignment.Remarks = optionalMessage;
-
+                
                 //Waiting for ACCEPTANCE
                 Dictionary<string, int> nextStatus =
                             WorkflowProvider.GetNextStatus(WorkflowProvider.ActionType.ASSIGNMENT_EMPLOYEE, assetID, 0);
@@ -311,15 +304,8 @@ namespace FASTWSv1.BO
 
                     if (null != result)
                     {
-                        //Seems like we have a successful add
-                        //Lets change asset status to Waiting for Acceptance
-                        if (assetProcess.UpdateAssetStatus(assetID, nextStatus[Constants.ASSET_STATUS]) == ReturnValues.SUCCESS)
-                        {
                             //return the new assetassignment ID
                             return result.AssetAssignmentID;
-                        }
-                        //we had problem updating the status
-                        return ReturnValues.FAILED;
                     }
                 }
                 else
@@ -331,7 +317,7 @@ namespace FASTWSv1.BO
             return ReturnValues.FAILED;
         }
 
-        private int TransferNonITAssetToEmployee(int assetID, int employeeID, string optionalMessage = "")
+        private int TransferNonITAssetToEmployee(int assetID, int employeeID, int fromEMPID, string optionalMessage = "")
         {
             AssetAssignment result = null;
             BO.AssetProcess assetProcess = new AssetProcess();
@@ -343,6 +329,7 @@ namespace FASTWSv1.BO
                 newAssignment.EmployeeID = employeeID;
                 newAssignment.DateAssigned = DateTime.Now;
                 newAssignment.Remarks = optionalMessage;
+                newAssignment.FromID = fromEMPID.ToString();
 
                 //Waiting for ACCEPTANCE
                 Dictionary<string, int> nextStatus =
@@ -387,7 +374,7 @@ namespace FASTWSv1.BO
             Providers.EmailProvider email = new Providers.EmailProvider();
             List<FixAsset> assetInQuestion;
             string optionalRemarks = string.Empty;
-            vwEmployee employee = new vwEmployee();
+            vwEmployeeList employee = new vwEmployeeList();
 
             using ( var db = new FASTDBEntities())
             {
@@ -402,6 +389,11 @@ namespace FASTWSv1.BO
                 if (assignments.Count() > 0)
                 {
                     int prevStatus = assignments[0].AssignmentStatusID;
+                    string prevToID;
+                    if (assignments[0].ToID != null)
+                    {
+                        prevToID = assignments[0].ToID.ToString();
+                    }
 
                     assetInQuestion = (from asset in db.FixAssets
                                        where asset.FixAssetID == assetID
@@ -420,7 +412,7 @@ namespace FASTWSv1.BO
                         else
                         {
                             optionalRemarks = String.Format("Employee ID {0} not allowed to accept assignment {1}.", employeeID.ToString(), assignmentID.ToString());
-                            Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ACCEPT, employeeID,optionalRemarks);
+                            Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ACCEPT, employeeID,optionalRemarks, assetInQuestion[0].AssetTag, assignmentID);
                             return ReturnValues.FAILED;
                         }
                     }
@@ -430,21 +422,30 @@ namespace FASTWSv1.BO
                     }
 
                     assignments[0].AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                    assignments[0].ToID = string.Empty;
                     
                     if ( db.SaveChanges() > 0 )
                     {
                         //Acceptance is ok, need to send an email and log in the AuditTrail
-                        Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ACCEPT, employeeID, optionalRemarks);
+                        Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ACCEPT, employeeID, optionalRemarks,assetInQuestion[0].AssetTag, assignmentID);
                         
                         vwFixAsset asset = assetProcess.GetFixAssetViewByID(assetInQuestion[0].FixAssetID);
 
                         if ( Helpers.ConfigurationHelper.SendEmail )
                         {
-                            email.SendAssignmentEmail(EmailProvider.EmailType.ASSIGNMENT_ACCEPTANCE, assignmentID);
-                         
-                            //TODO: Send updated liabilities to the employee and admin
-
-                            email.SendAssignmentEmail(EmailProvider.EmailType.LIST_ASSIGMENTS, assignmentID);
+                            if (assetInQuestion[0].AssetStatusID == Constants.ASSET_STATUS_WITH_MIS)
+                            {
+                                //Inform MIS 
+                                email.SendAssignmentEmail(EmailProvider.EmailType.ASSIGNMENT_ACCEPTANCE_MIS, assignmentID);
+                                //Update Employee
+                                email.SendAssignmentEmail(EmailProvider.EmailType.ASSIGNMENT_UPDATE,assignmentID);
+                            }
+                            else
+                            {
+                                email.SendAssignmentEmail(EmailProvider.EmailType.ASSIGNMENT_ACCEPTANCE, assignmentID);
+                                //TODO: Send updated liabilities to the employee and admin
+                                email.SendAssignmentEmail(EmailProvider.EmailType.LIST_ASSIGMENTS, assignmentID);
+                            }
 
                         }
                         return ReturnValues.SUCCESS;
@@ -492,7 +493,7 @@ namespace FASTWSv1.BO
                     if (db.SaveChanges() > 0)
                     {
                         //Acceptance is ok, need to send an email and log in the AuditTrail
-                        Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ACCEPT, employeeID, "REJECTED " +  optionalRemarks);
+                        Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.ACCEPT, employeeID, "REJECTED " + optionalRemarks, assetInQuestion[0].AssetTag, assignmentID);
 
                         vwFixAsset asset = assetProcess.GetFixAssetViewByID(assetInQuestion[0].FixAssetID);
 
@@ -540,6 +541,8 @@ namespace FASTWSv1.BO
                 {
                     int prevAssetStatus = asset.AssetStatusID;
                     int prevAssignStatus = assignment.AssignmentStatusID;
+                    string prevToID = assignment.ToID;
+                    string prevFromID = assignment.FromID;
 
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
 
@@ -547,11 +550,13 @@ namespace FASTWSv1.BO
                     {
                         //Success, update the assignment
                         assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                        assignment.ToID = "MIS";
+                        assignment.FromID = assignment.EmployeeID.ToString();
 
                         if ( db.SaveChanges() > 0)
                         {
                             Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET, 
-                                model.RequestorID, String.Format("Asset {0} transferred to MIS.", model.FixAssetID.ToString()));
+                                model.RequestorID, String.Format("Asset {0} transferred to MIS.", model.FixAssetID.ToString()), asset.AssetTag, model.CurrentAssignmentID);
 
                             vwFixAsset assetView = assetProcess.GetFixAssetViewByID(asset.FixAssetID);
 
@@ -571,6 +576,8 @@ namespace FASTWSv1.BO
                             //revert and return
                             asset.AssetStatusID = prevAssetStatus;
                             assignment.AssignmentStatusID = prevAssignStatus;
+                            assignment.ToID = prevToID;
+                            assignment.FromID = prevFromID;
                             db.SaveChanges();
                             return ReturnValues.FAILED;
                         }
@@ -614,14 +621,18 @@ namespace FASTWSv1.BO
                 {
                     int prevAssetStatus = asset.AssetStatusID;
                     int prevAssignStatus = assignment.AssignmentStatusID;
+                    string prevFromID = assignment.FromID;
+                    string prevToID = assignment.ToID;
 
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                    assignment.ToID = model.ReceipientID.ToString();
+                    assignment.FromID = "MIS";
 
                     if (db.SaveChanges() > 0)
                     {
                             Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
-                                model.RequestorID, String.Format("Asset {0} transferred to Employee {1}.", model.FixAssetID.ToString(), model.ReceipientID));
+                                model.RequestorID, String.Format("Asset {0} transferred to Employee {1}.", model.FixAssetID.ToString(), model.ReceipientID), asset.AssetTag, model.CurrentAssignmentID);
 
                             vwFixAsset assetView = assetProcess.GetFixAssetViewByID(asset.FixAssetID);
 
@@ -696,20 +707,19 @@ namespace FASTWSv1.BO
                     newAssignment.OptionalRemarks = model.OptionalRemarks;
                     
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
+                    assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                    assignment.DateReleased = DateTime.Now;
+                    assignment.Remarks = model.OptionalRemarks;
+        
                     if (db.SaveChanges() > 0)
                     {
-                        assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
-                        assignment.DateReleased = DateTime.Now;
-        
-                        if (db.SaveChanges() > 0)
-                        {
                             if ( asset.AssetClassID == Constants.ASSET_CLASS_IT)
                             {
-                                result = TransferITAssetToEmployee(asset.FixAssetID, model.ReceipientID, model.OptionalRemarks);
+                                result = TransferITAssetToEmployee(asset.FixAssetID, model.ReceipientID, assignment.EmployeeID, model.OptionalRemarks);
                             }
                             else
                             {
-                                result = TransferNonITAssetToEmployee(asset.FixAssetID, model.ReceipientID, model.OptionalRemarks);
+                                result = TransferNonITAssetToEmployee(asset.FixAssetID, model.ReceipientID,assignment.EmployeeID, model.OptionalRemarks);
                             }
 
                             if (result > 0 )
@@ -717,12 +727,12 @@ namespace FASTWSv1.BO
                                 //Inform the parties about the transfer via email
                                 Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
                                     model.RequestorID, String.Format("Transfer of asset {0} to Employee {1} by Employee {2} is almost done.",
-                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()));
+                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()), asset.AssetTag, model.CurrentAssignmentID);
 
                                 if (Helpers.ConfigurationHelper.SendEmail)
                                 {
                                     //Send Email to Receipient
-                                    email.SendAssignmentEmail(EmailProvider.EmailType.TRANSFER_RECEIVE, assignment.AssetAssignmentID,"","",0,model.ReceipientID);
+                                    email.SendAssignmentEmail(EmailProvider.EmailType.TRANSFER_RECEIVE, result,"","",0,model.ReceipientID);
 
                                     //send email to requestor
                                     email.SendAssignmentEmail(EmailProvider.EmailType.TRANSFER_WOAPPROVAL_DONE, assignment.AssetAssignmentID,"","",model.RequestorID,0);
@@ -734,7 +744,7 @@ namespace FASTWSv1.BO
                             {
                                 Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
                                     model.RequestorID, String.Format("Transfer of asset {0} to Employee {1} by Employee {2} FAILED.",
-                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()));
+                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()), asset.AssetTag, model.CurrentAssignmentID);
 
                                 asset.AssetStatusID = prevAssetStatus;
                                 assignment.AssignmentStatusID = prevAssignStatus;
@@ -748,18 +758,15 @@ namespace FASTWSv1.BO
                         {
                               Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
                                     model.RequestorID, String.Format("Transfer of asset {0} to Employee {1} by Employee {2} FAILED.",
-                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()));
+                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()), asset.AssetTag, model.CurrentAssignmentID);
 
                             asset.AssetStatusID = prevAssetStatus;
                             db.SaveChanges();
                             return ReturnValues.FAILED;
                         }
                     }
-                    else
-                    {
-                        return ReturnValues.FAILED;
-                    }
-                }
+                    
+                
 
             }
             return ReturnValues.FAILED;
@@ -791,20 +798,29 @@ namespace FASTWSv1.BO
                 {
                     int prevAssetStatus = asset.AssetStatusID;
                     int prevAssignStatus = assignment.AssignmentStatusID;
+                    string prevToID = assignment.ToID;
+                    string prevFromID = assignment.FromID;
 
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
 
                     if ( db.SaveChanges() > 0)
                     {
                         assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
-                        assignment.Remarks = (model.ToMIS) ? "MIS" : model.ReceipientID.ToString();
-
+                        assignment.Remarks = model.OptionalRemarks;
+                        
+                        if ( !model.ToMIS)
+                        {
+                            assignment.ToID = model.ReceipientID.ToString();
+                            assignment.FromID = assignment.EmployeeID.ToString();
+                        }
+                        
                         if ( db.SaveChanges() > 0)
                         {
                             string receiver = (model.ToMIS) ? "MIS" : model.ReceipientID.ToString();
 
                             Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
-                                model.RequestorID,String.Format("Transfer request of asset {0} by Employee {1} to Employee {2}",asset.FixAssetID,model.RequestorID,receiver));
+                                model.RequestorID,String.Format("Transfer request of asset {0} by Employee {1} to Employee {2}",asset.AssetTag,model.RequestorID,receiver), 
+                                asset.AssetTag, model.CurrentAssignmentID);
 
                             if ( Helpers.ConfigurationHelper.SendEmail)
                             {
@@ -850,6 +866,10 @@ namespace FASTWSv1.BO
                         {
                             assignment.AssignmentStatusID = prevAssignStatus;
                             asset.AssetStatusID = prevAssetStatus;
+                            assignment.ToID = prevToID;
+                            assignment.FromID = prevFromID;
+                            assignment.Remarks = String.Empty;
+
                             db.SaveChanges();
                             return ReturnValues.FAILED;
                         }
@@ -857,6 +877,7 @@ namespace FASTWSv1.BO
                     else
                     {
                         asset.AssetStatusID = prevAssetStatus;
+                        assignment.ToID = string.Empty;
                         db.SaveChanges();
                         return ReturnValues.FAILED;
                     }
@@ -893,6 +914,8 @@ namespace FASTWSv1.BO
                 {
                     int prevAssetStatus = asset.AssetStatusID;
                     int prevAssignStatus = assignment.AssignmentStatusID;
+                    string prevToID = assignment.ToID;
+                    string prevFromID = assignment.FromID;
 
                     //Check if the destination is MIS, if yes, exit and assign to MIS
                     if (model.ToMIS)
@@ -909,26 +932,28 @@ namespace FASTWSv1.BO
                     }
                     //Else continue
 
-                    ExternalAddAssignmentViewModel newAssignment = new ExternalAddAssignmentViewModel();
-                    newAssignment.AssetTag = asset.AssetTag;
-                    newAssignment.AssigningEmpID = model.RequestorID;
-                    newAssignment.ReceipientEmpID = model.ReceipientID;
-                    newAssignment.OptionalRemarks = model.OptionalRemarks;
-
+                    //ExternalAddAssignmentViewModel newAssignment = new ExternalAddAssignmentViewModel();
+                    //newAssignment.AssetTag = asset.AssetTag;
+                    //newAssignment.AssigningEmpID = model.RequestorID;
+                    //newAssignment.ReceipientEmpID = model.ReceipientID;
+                    //newAssignment.OptionalRemarks = model.OptionalRemarks;
+                    
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     if (db.SaveChanges() > 0)
                     {
                         assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                        assignment.ToID = model.ReceipientID.ToString();
+                        assignment.DateReleased = DateTime.Now;
 
                         if (db.SaveChanges() > 0)
                         {
                             if (asset.AssetClassID == Constants.ASSET_CLASS_IT)
                             {
-                                result = TransferITAssetToEmployee(asset.FixAssetID, model.ReceipientID, model.OptionalRemarks);
+                                result = TransferITAssetToEmployee(asset.FixAssetID, model.ReceipientID, assignment.EmployeeID, model.OptionalRemarks);
                             }
                             else
                             {
-                                result = TransferNonITAssetToEmployee(asset.FixAssetID, model.ReceipientID, model.OptionalRemarks);
+                                result = TransferNonITAssetToEmployee(asset.FixAssetID, model.ReceipientID, assignment.EmployeeID, model.OptionalRemarks);
                             }
 
                             if (result > 0)
@@ -936,12 +961,12 @@ namespace FASTWSv1.BO
                                 //Inform the parties about the transfer via email
                                 Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
                                     model.RequestorID, String.Format("Transfer of asset {0} to Employee {1} by Employee {2} is almost done.",
-                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()));
+                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()), asset.AssetTag, model.CurrentAssignmentID);
 
                                 if (Helpers.ConfigurationHelper.SendEmail)
                                 {
                                     //Send Email to Receipient
-                                    email.SendAssignmentEmail(EmailProvider.EmailType.TRANSFER_RECEIVE, assignment.AssetAssignmentID, "", "", 0, model.ReceipientID);
+                                    email.SendAssignmentEmail(EmailProvider.EmailType.TRANSFER_RECEIVE, result, "", "", 0, model.ReceipientID);
                                     
                                     //send email to requestor
                                     email.SendAssignmentEmail(EmailProvider.EmailType.TRANSFER_WOAPPROVAL_DONE, assignment.AssetAssignmentID, "", "", model.RequestorID, 0);
@@ -953,10 +978,11 @@ namespace FASTWSv1.BO
                             {
                                 Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
                                     model.RequestorID, String.Format("Transfer of asset {0} to Employee {1} by Employee {2} FAILED.",
-                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()));
+                                    asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()), asset.AssetTag, model.CurrentAssignmentID);
 
                                 asset.AssetStatusID = prevAssetStatus;
                                 assignment.AssignmentStatusID = prevAssignStatus;
+                                assignment.ToID = prevToID;
                                 db.SaveChanges();
                                 return ReturnValues.FAILED;
 
@@ -966,9 +992,10 @@ namespace FASTWSv1.BO
                         {
                             Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET,
                                   model.RequestorID, String.Format("Transfer of asset {0} to Employee {1} by Employee {2} FAILED.",
-                                  asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()));
+                                  asset.FixAssetID.ToString(), model.ReceipientID.ToString(), model.RequestorID.ToString()), asset.AssetTag, model.CurrentAssignmentID);
 
                             asset.AssetStatusID = prevAssetStatus;
+
                             db.SaveChanges();
                             return ReturnValues.FAILED;
                         }
@@ -1010,19 +1037,21 @@ namespace FASTWSv1.BO
                 {
                     int prevAssetStatus = asset.AssetStatusID;
                     int prevAssignStatus = assignment.AssignmentStatusID;
+                    string prevToID = assignment.ToID;
 
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                    assignment.ToID = string.Empty;
 
                     if ( db.SaveChanges()> 0)
                     {
-                        Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET, model.RequestorID, String.Format("TRANSFER DENIED : {0}", model.OptionalRemarks));
+                        Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.TRANSFER_ASSET, model.RequestorID, 
+                                String.Format("TRANSFER DENIED : {0}", model.OptionalRemarks),asset.AssetTag, model.CurrentAssignmentID);
 
                         if (Helpers.ConfigurationHelper.SendEmail)
                         {
                             //Inform the requestor
                             email.SendAssignmentEmail(EmailProvider.EmailType.TRANSFER_DENIED, assignment.AssetAssignmentID);
-                            
                         }
 
                     }
@@ -1030,6 +1059,7 @@ namespace FASTWSv1.BO
                     {
                         asset.AssetStatusID = prevAssetStatus;
                         assignment.AssignmentStatusID = prevAssignStatus;
+                        assignment.ToID = prevToID;
                         db.SaveChanges();
 
                         return ReturnValues.FAILED;
@@ -1069,13 +1099,15 @@ namespace FASTWSv1.BO
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
                     assignment.DateReleased = DateTime.Now;
+                    asset.Remarks = model.ReasonCode.ToString();
+                    assignment.Remarks = model.OptionalRemarks;
 
                     if (db.SaveChanges() != 0)
                     {
                         List<string> adminList = email.GetAdminMailToList(requestor.DepartmentID);
 
                         Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.RELEASE, model.RequestorID, 
-                            String.Format("Release of asset {0} without approval initiated.", asset.FixAssetID.ToString()));
+                            String.Format("Release of asset {0} without approval initiated.", asset.FixAssetID.ToString()),asset.AssetTag, model.AssignmentID);
 
                         if (Helpers.ConfigurationHelper.SendEmail)
                         {
@@ -1129,19 +1161,20 @@ namespace FASTWSv1.BO
 
                     asset.AssetStatusID = nextStatus[Constants.ASSET_STATUS];
                     assignment.AssignmentStatusID = nextStatus[Constants.ASSIGN_STATUS];
+                    assignment.Remarks = model.OptionalRemarks;
 
                     if (db.SaveChanges() != 0)
                     {
                         List<string> managersList = email.GetManagersMailList(requestor.DepartmentID);
 
                         Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.RELEASE, model.RequestorID,
-                               String.Format("Release of asset {0} with approval initiated.", asset.FixAssetID.ToString()));
+                               String.Format("Release of asset {0} with approval initiated.", asset.FixAssetID.ToString()),asset.AssetTag, model.AssignmentID);
 
 
                         if (Helpers.ConfigurationHelper.SendEmail)
                         {
                             //Inform the managers about the request for approval.
-                            email.SendAssignmentEmail(EmailProvider.EmailType.RELEASE_REQUEST_WTAPPROVAL, assignment.AssetAssignmentID);
+                            email.SendAssignmentEmail(EmailProvider.EmailType.RELEASE_REQUEST_WTAPPROVAL, assignment.AssetAssignmentID,"","",model.RequestorID,0);
                             //inform the requestor that the request was sent.
                             email.SendAssignmentEmail(EmailProvider.EmailType.RELEASE_REQUEST_CONFIRMATION, assignment.AssetAssignmentID, "", "", model.RequestorID, 0);
                         }
@@ -1195,7 +1228,7 @@ namespace FASTWSv1.BO
                     if (db.SaveChanges() != 0)
                     {
                         Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.RELEASE, model.ApprovingID,
-                                String.Format("Release of asset {0} approved.", asset.FixAssetID.ToString()));
+                                String.Format("Release of asset {0} approved.", asset.FixAssetID.ToString()), asset.AssetTag, model.AssignmentID);
 
 
                         List<string> adminList = email.GetAdminMailToList(owner.DepartmentID);
@@ -1259,7 +1292,7 @@ namespace FASTWSv1.BO
                     {
 
                         Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.RELEASE, model.ApprovingID,
-                               String.Format("Release of asset {0} has been denied.", asset.FixAssetID.ToString()));
+                               String.Format("Release of asset {0} has been denied.", asset.FixAssetID.ToString()), asset.AssetTag, model.AssignmentID);
 
                         List<string> ccList = email.GetManagersMailList(owner.DepartmentID);
                         
@@ -1318,7 +1351,7 @@ namespace FASTWSv1.BO
                     {
 
                         Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.RELEASE, model.AcceptingID,
-                               String.Format("Released asset {0} has been accepted by the Admin", asset.FixAssetID.ToString()));
+                               String.Format("Released asset {0} has been accepted by the Admin", asset.FixAssetID.ToString()), asset.AssetTag, model.AssignmentID);
 
                         List<string> adminList = email.GetAdminMailToList(owner.DepartmentID);
                         List<string> ccList = email.GetManagersMailList(owner.DepartmentID);
@@ -1383,7 +1416,7 @@ namespace FASTWSv1.BO
                     {
 
                         Helpers.Logger.AddToAuditTrail(Helpers.Logger.UserAction.RELEASE, model.AcceptingID,
-                               String.Format("Released asset {0} has been rejected by the Admin", asset.FixAssetID.ToString()));
+                               String.Format("Released asset {0} has been rejected by the Admin", asset.FixAssetID.ToString()), asset.AssetTag, model.AssignmentID);
 
                         List<string> adminList = email.GetAdminMailToList(owner.DepartmentID);
                         List<string> ccList = email.GetManagersMailList(owner.DepartmentID);

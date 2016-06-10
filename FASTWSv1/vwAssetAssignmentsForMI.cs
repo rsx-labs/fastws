@@ -38,5 +38,7 @@ namespace FASTWSv1
         public string AssignmentRemarks { get; set; }
         public int MISEmployeeID { get; set; }
         public int DepartmentID { get; set; }
+        public string FromID { get; set; }
+        public string ToID { get; set; }
     }
 }

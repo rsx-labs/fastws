@@ -12,7 +12,7 @@ namespace FASTWSv1
     using System;
     using System.Collections.Generic;
     
-    public partial class vwEmployee
+    public partial class vwEmployeeList
     {
         public int EmployeeID { get; set; }
         public string FirstName { get; set; }

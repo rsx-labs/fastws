@@ -23,12 +23,14 @@ namespace FASTWSv1.Helpers
         };
 
       
-        public static void AddToAuditTrail(UserAction action, int employeeID, string additionalData)
+        public static void AddToAuditTrail(UserAction action, int employeeID, string additionalData, string assetTag="", int assignmentID=0)
         {
             AuditTrail newLog = new AuditTrail();
             newLog.Date = DateTime.Now;
             newLog.EmployeeID = employeeID;
-            newLog.AdditionalInformation = "RESULT : " + additionalData; 
+            newLog.AdditionalInformation = "RESULT : " + additionalData;
+            newLog.AssetTag = assetTag;
+            newLog.AssignmentID = assignmentID.ToString();
 
             switch (action)
             {
@@ -72,7 +74,8 @@ namespace FASTWSv1.Helpers
 
             using (var db = new FASTDBLogEntities())
             {
-                db.InsertToAuditTrail(newLog.EmployeeID, newLog.Action, newLog.AdditionalInformation);
+                db.AuditTrails.Add(newLog);
+                db.SaveChanges();
             }
         }
 
